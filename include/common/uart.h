@@ -1,12 +1,12 @@
 /**
 *@file my_uart.h
 *@brief UART usage functions for KL25Z
-*@Author Aakash Kumar
+*@Author Aakash Kumar/ArunSundar
 *@date Oct 10 2017
 
 */
-#ifndef MY_UART
-#define MY_UART
+#ifndef UART_H
+#define UART_H
 
 #include<stdint.h>
 
@@ -66,4 +66,4 @@ Clears associated flags once the interrupt is serviced.
 */
 
 
-#endif MY_UART // End of my uart.h
+#endif UART_H // End of my uart.h
