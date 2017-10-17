@@ -12,7 +12,6 @@
 
 #define BAUD_RATE 115200
 
-
 void UART_configure(void);
 /*
 @brief Configures the UART to given settings 
@@ -24,7 +23,7 @@ void UART_configure(void);
 
 void UART_Send(uint8_t * data);
 /*
-@brief Configures the UART to given settings 
+@brief Sends a single byte of data to UART
 @param *data byte pointer to location of data to be transmitted
 @return  None
 
@@ -32,7 +31,7 @@ void UART_Send(uint8_t * data);
 
 void UART_send_n(uint8_t * src, size_t length);
 /*
-@brief Configures the UART to given settings 
+@brief Sends a block of data to the UART
 @param *src byte pointer to start location of memory block to be transmitted
 @param length of memory block to be transmitted
 @return  None
@@ -41,7 +40,7 @@ void UART_send_n(uint8_t * src, size_t length);
 
 uint8_t * UART_receive(uint8_t * dst);
 /*
-@brief Configures the UART to given settings 
+@brief Receives a byte of data from the UART 
 @param *data byte pointer to location where received data is stored
 @return  None
 
@@ -49,7 +48,7 @@ uint8_t * UART_receive(uint8_t * dst);
 
 uint8_t * UART_receive_n(uint8_t * dst, size_t length);
 /*
-@brief Configures the UART to given settings 
+@brief Receives a block of data from the UART
 @param *dst byte pointer to start location of memory block where received data is stored
 @param length of memory block received
 @return  TBD
