@@ -1,39 +1,53 @@
+#Makefile for ECEN 5813-002 Project 2
+#Author Aakash Kumar
+
+# Variables for compiler
 CC=gcc
 CCBBB=arm-linux-gnueabihf-gcc
+
+# Compiler flags
 CSTD=c99
 CFLAGS=-Wall\
 	-std=$(CSTD)\
 	-g\
-#	-Werror\
+	-Werror\
 	-O0
 
 include sources.mk
 
+# Flag for cmocka unit test framework
 TESTINCLUDE=-lcmocka
-	
+
+#preprocessor flags and 	
 CPPFLAGS=-E
 LDFLAGS=
+
+#Set platform to build for as host machine by default
 PLATFORM=HOST
 
+#size tools for different platforms
 SIZETOOL=size
 SIZETOOLBBB=arm-linux-gnueabihf-size
 	
-.PHONY:build clean compile-all upload
+.PHONY:build clean compile-all upload unittests
 
+#compile time switches for verbose output
+#and adding in 
 DS=VERBOSE
 PS=
 
+#List of files to be cleaned when running clean
 TOREMOVE=$(OFILEPATH)/*.o\
 	$(TESTOBJPATH)/*.o\
-	*.out\
-	$(TESTOBJPATH)/*.out\
+	$(TESTTARGET)\
+	$(TARGET)\
 	$(OFILEPATH)/*.map\
 	*.asm\
 	*.i\
 	$(OFILEPATH)/*.d\
 	$(TESTOBJPATH)/*.d\
 	$(OFILEPATH)/*.dep\
-	*.elf
+
 
 #if platform is beaglebone black 	
 #change compiler used
@@ -42,7 +56,7 @@ CC = $(CCBBB)
 SIZETOOL=$(SIZETOOLBBB)
 else
 
-#if platform is KL25Z change compiler used and linker flags 
+#if platform is KL25Z, change compiler used and linker flags 
 #and add additional startup code/Include files for KL25Z
 ifeq ($(PLATFORM),KL25Z)
 CC = arm-none-eabi-gcc
@@ -68,7 +82,7 @@ BBBPATH=/home/code/
 CUR_TARGET=project2
 TARGET=$(CUR_TARGET).elf
 UPL_TARGET=project1_demo.elf
-TESTTARGET=../unit_tests/obj/unit_test_results.out
+TESTTARGET=../unit_tests/unittests.out
 
 #folder paths to create .o files in seperate folder 
 #and not clutter the src folder
@@ -79,20 +93,30 @@ TESTSRCPATH=../unit_tests
 TESTOBJPATH=../unit_tests/obj
 
 #creating list of objects to be built based on source file
-OBJECTS:=$(addprefix $(OFILEPATH)/,$(SOURCES:%.c=%.o))
-TESTOBJECTS:=$(addprefix $(TESTOBJPATH)/,$(TESTSOURCES:%.c=%.o))
+# these have been splitup to prevent errors from 2 main() s when 
+# test code and build code are built together
 
-DEPS:=$(addprefix $(OFILEPATH),$(SOURCES:.c=.d))
+#common objects to be built for test and final build
+COMMONOBJECTS:=$(addprefix $(OFILEPATH)/,$(COMMONSOURCES:%.c=%.o))
+
+#objects for build
+OBJECTS:=$(addprefix $(OFILEPATH)/,$(MAINSOURCE:%.c=%.o)) $(COMMONOBJECTS)
+
+#objects for test
+TESTOBJECTS:=$(addprefix $(TESTOBJPATH)/,$(TESTSOURCES:%.c=%.o)) $(COMMONOBJECTS)
+
+#list of dependencies
+DEPS:=$(addprefix $(OFILEPATH),$(OBJECTS:.o=.d))
 
 -include $(DEPS)
 
 #************* build scripts ********************
 
 #script to run unit tests
-test:$(TESTOBJECTS) $(OBJECTS)
+unittests:$(TESTOBJECTS) 
 	mkdir $(TESTOBJPATH) -p
 	$(CC) $(TESTOBJECTS) -I$(INCLUDES) $(CFLAGS) -o $(TESTTARGET) $(PS) $(TESTINCLUDE)
-	./$(TESTTARGET)
+#	./$(TESTTARGET)
 
 #script to build the executable from all source files	
 build:$(OBJECTS)
@@ -105,12 +129,12 @@ build:$(OBJECTS)
 #building the executable for beaglebone black 
 #and transfer it directly to the board using scp
 upload:$(OBJECTS)
-	$(CCBBB) $(OBJECTS) -I$(INCLUDES) $(CFLAGS) $(LDFLAGS) -o $(UPL_TARGET) -D$(DS) $(PS) -Xlinker -Map=$(OFILEPATH)/project1.map
+	$(CCBBB) $(OBJECTS) -I$(INCLUDES) $(CFLAGS) $(LDFLAGS) -o $(TARGET) -D$(DS) $(PS) -Xlinker -Map=$(OFILEPATH)/$(CUR_TARGET).map
 #	@echo "\n******Built" $(TARGET)"******\n"
-	$(SIZETOOLBBB) $(OBJECTS) $(UPL_TARGET)
-	scp $(UPL_TARGET) root@192.168.7.2:$(BBBPATH)$(UPL_TARGET)
+	$(SIZETOOLBBB) $(OBJECTS) $(TARGET)
+	scp $(TARGET) root@192.168.7.2:$(BBBPATH)$(TARGET)
 
-#script to just compile all	source files
+#script to just compile all	source files and not link
 compile-all:$(OBJECTS)
 	
 $(OFILEPATH)/%.d : %.c
@@ -128,20 +152,19 @@ $(OFILEPATH)/%.s : %.s
 	cp $< $@
 #	$(CC) -MMD -c $< -o $@ -I$(INCLUDES) $(CFLAGS) -D$(DS) $(LDFLAGS) $(PS)
 
+#script to compile build C files
 $(OFILEPATH)/%.o : %.c
 	mkdir $(OFILEPATH) -p
 #	$(CC) -MM $< -MF $(OFILEPATH)/$*.dep -I $(INCLUDES) $(CFLAGS) $(PS)
 	$(CC) -MMD -c $< -o $@ -I$(INCLUDES) $(CFLAGS) -D$(DS) $(LDFLAGS) $(PS)
 #	@echo "\n******Built" $@"******"	
-	
-#$(TESTOBJPATH)/%.o	
+
+#script to compile test C files	
 $(TESTOBJPATH)/%.o	: $(TESTSRCPATH)/%.c
 	mkdir $(TESTOBJPATH) -p
 	$(CC) -MMD -c $< -o $@ -I$(INCLUDES) $(CFLAGS) $(PS)
 #	@echo "\n******Built" $@"******"
 
-
-
-#script to delete objects created by build or upload
+#script to delete objects created by build script
 clean:
 	rm -f $(TOREMOVE)

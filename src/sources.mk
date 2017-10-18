@@ -1,6 +1,7 @@
 
-SOURCES= main.c\
-	debug.c\
+MAINSOURCE= main.c
+
+COMMONSOURCES= debug.c\
 	memory.c\
 	conversion.c
 	
