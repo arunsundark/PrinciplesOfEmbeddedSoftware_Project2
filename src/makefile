@@ -10,13 +10,14 @@ CSTD=c99
 CFLAGS=-Wall\
 	-std=$(CSTD)\
 	-g\
-	-Werror\
+#	-Werror\
 	-O0
 
 include sources.mk
 
 # Flag for cmocka unit test framework
 TESTINCLUDE=-lcmocka
+	
 
 #preprocessor flags and 	
 CPPFLAGS=-E
@@ -110,13 +111,13 @@ DEPS:=$(addprefix $(OFILEPATH),$(OBJECTS:.o=.d))
 
 -include $(DEPS)
 
-#************* build scripts ********************
+#************* build rules ********************
 
 #script to run unit tests
 unittests:$(TESTOBJECTS) 
 	mkdir $(TESTOBJPATH) -p
 	$(CC) $(TESTOBJECTS) -I$(INCLUDES) $(CFLAGS) -o $(TESTTARGET) $(PS) $(TESTINCLUDE)
-#	./$(TESTTARGET)
+	./$(TESTTARGET)
 
 #script to build the executable from all source files	
 build:$(OBJECTS)
@@ -162,7 +163,7 @@ $(OFILEPATH)/%.o : %.c
 #script to compile test C files	
 $(TESTOBJPATH)/%.o	: $(TESTSRCPATH)/%.c
 	mkdir $(TESTOBJPATH) -p
-	$(CC) -MMD -c $< -o $@ -I$(INCLUDES) $(CFLAGS) $(PS)
+	$(CC) -MMD -c $< -o $@ -I$(INCLUDES) $(CFLAGS) $(PS) 
 #	@echo "\n******Built" $@"******"
 
 #script to delete objects created by build script
