@@ -23,7 +23,7 @@
 */
 
 
-CB_status CB_init(CB_t* source_ptr, int length)
+CB_status CB_init(CB_t* source_ptr, uint8_t length)
 {	
 	/*checks for null pointer */
 
@@ -76,26 +76,26 @@ CB_status CB_buffer_add_item(CB_t* source_ptr,uint8_t value)
 	else
 	{	/*Checks if the buffer is full */ 
 
-		if(source_ptr->count = source_ptr->length)
+		if(source_ptr->count == source_ptr->length)
 
-		{
-			source_ptr->tail=value;
+		{	return bufferfull;
+			
 
-			/* sets the head pointer to the currently added location */
-
-			source_ptr->head=source_ptr->tail;
-
-			int last_data;
-
-			/* call remove function to set the tail pointer to the new "oldest element" in the buffer */
-
-			CB_status st=CB_buffer_remove_item(source_ptr,last_data);
 		}
 		else
 		{	/* For adding when the buffer is not full */
-			source_ptr->head+=1;
 
-			source_ptr->head=value;
+			if(source_ptr->head==source_ptr->limit)
+			{	source_ptr->head=source_ptr->data;
+				source_ptr->head=value;
+	   		}
+			else
+			{
+				source_ptr->head+=1;
+				source_ptr->head=value;
+			}
+
+			
 
 		}
 	source_ptr->count++;
@@ -116,7 +116,7 @@ CB_status CB_buffer_add_item(CB_t* source_ptr,uint8_t value)
 */
 
 
-CB_status CB_buffer_remove_item(CB_t* source_ptr,int* value)
+CB_status CB_buffer_remove_item(CB_t* source_ptr,uint8_t* value)
 {
 	/*checks for null pointer */
 	 
@@ -179,7 +179,7 @@ CB_status CB_buffer_remove_item(CB_t* source_ptr,int* value)
 */
 
 
-CB_status CB_peek(CB_t* source_ptr,int position, int* peeked_ptr)
+CB_status CB_peek(CB_t* source_ptr,uint8_t position, uint8_t* peeked_ptr)
 {
 
 
@@ -208,7 +208,7 @@ CB_status CB_peek(CB_t* source_ptr,int position, int* peeked_ptr)
 
 			/*checks for corner cases */
 
-			int difference = ((source_ptr->head) + position) - source_ptr->limit;
+			uint8_t difference = ((source_ptr->head) + position) - source_ptr->limit;
 
 			*peeked_ptr=*((source_ptr->data) + difference);
 

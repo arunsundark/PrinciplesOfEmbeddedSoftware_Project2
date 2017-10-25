@@ -5,8 +5,8 @@
 *@date Oct 10 2017
 
 */
-#ifndef MY_CIRCULARBUFFER
-#define MY_CIRCULARBUFFER
+#ifndef CIRCULARBUFFER
+#define CIRCULARBUFFER
 
 #include<stdint.h>
 typedef struct
@@ -59,6 +59,7 @@ CB_status CB_is_full(CB_t* source_ptr);
 */
 
 CB_status CB_is_empty(CB_t* source_ptr);
+/*
 @brief checks if the buffer is empty
 @param uint8_t* source_buffer the input buffer which is to be checked
 @return  CB_status status of the operation or an error code
@@ -67,10 +68,14 @@ CB_status CB_is_empty(CB_t* source_ptr);
 
 
 
-CB_status CB_peek(CB_t* source_buffer, uint8_t position_peek);
+CB_status CB_peek(CB_t* source_buffer, uint8_t position, uint8_t* peeked_ptr);
+/*
+
 @brief peeks at a particuluar position in the buffer 
-@param uint8_t* source_buffer the input buffer which is to be poked at
-@param position_peek position to peek in the circular buffer
+@param CB_t* source_buffer the input buffer which is to be poked at
+@param position position to peek in the circular buffer
+@param peeked_ptr gives the to peek in the circular buffer
+
 @return  CB_status status of the operation
 
 */
