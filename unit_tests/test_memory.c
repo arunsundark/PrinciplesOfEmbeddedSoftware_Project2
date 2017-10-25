@@ -7,12 +7,54 @@
 #include <string.h>
 
 #include "memory.h"
+#include "conversion.h"
 
-static void test_my_memset(void** state)
+//****** memmove tests
+/***
+TEST 1
+Check for NULL pointer
+**/
+static void my_memmove_test_null_1(void** state)
+{
+		size_t testLength=10;
+		
+		uint8_t * memmove_src=NULL,* memmove_dst= malloc(sizeof(uint8_t)*testLength); 
+		
+		// Testing 
+		assert_int_equal(my_memmove(memmove_src,memmove_dst,testLength),0) ;
+		free(memmove_dst);
+}
+
+
+
+//***  my_memset tests ********* 
+/***
+TEST 1
+Check for NULL pointer
+**/
+
+static void my_memset_test_null(void** state)
 {
 		size_t testLength=10;
 		uint8_t setValue=55;
-		uint8_t * memset_data=malloc(sizeof(uint32_t)*testLength),* test_data=malloc(sizeof(uint32_t)*testLength); 
+		uint8_t * memset_data=NULL; 
+		
+		
+		// Testing 
+		assert_int_equal(my_memset(memset_data,testLength,setValue),0) ;
+
+}
+
+/***
+TEST 2
+Check if the values are set properly
+**/
+
+static void my_memset_test(void** state)
+{
+		size_t testLength=10;
+		uint8_t setValue=55;
+		uint8_t * memset_data=malloc(sizeof(uint8_t)*testLength),* test_data=malloc(sizeof(uint8_t)*testLength); 
 		
 		
 		// Testing my_memset by verifying its results with memset function from string.h
@@ -22,7 +64,28 @@ static void test_my_memset(void** state)
 		free(test_data);
 }
 
-static void test_my_memzero(void** state)
+// *** my_memzero tests ***** 
+/***
+TEST 1
+Check for NULL pointer
+**/
+
+static void my_memzero_test_null(void** state)
+{
+		size_t testLength=10;
+		uint8_t * memzero_data=NULL; 
+		
+		// Testing 
+		assert_int_equal(my_memzero(memzero_data,testLength),0) ;
+		
+}
+
+/***
+TEST 2
+Check if the values are set properly
+**/
+
+static void my_memzero_test(void** state)
 {
 		size_t testLength=10;
 		uint8_t * memzero_data=malloc(sizeof(uint32_t)*testLength),* test_data=malloc(sizeof(uint32_t)*testLength); 
@@ -34,15 +97,118 @@ static void test_my_memzero(void** state)
 		free(test_data);
 }
 
+// tests for my_reverse 
+/**
+TEST 1
+test for NULL pointer
+*/
+
+static void my_reverse_test_null(void** state)
+{
+		size_t testLength=10;
+		uint8_t * reverse_data=NULL; 
+		
+		// Testing 
+		assert_int_equal(my_reverse(reverse_data,testLength),0) ;
+		
+}
+
+/**
+TEST 2
+test for odd number of characters
+*/
+
+static void my_reverse_test_odd(void** state)
+{
+		size_t testLength=11;
+		char testdata[]="abcde\n54321";
+		char resultdata[]="12345\nedcba" ;
+		
+		// Testing 
+		assert_memory_equal((uint8_t*)my_reverse((uint8_t*)testdata,testLength),resultdata,testLength) ;
+
+}
+
+/**
+TEST 3
+test even number of characters
+*/
+
+static void my_reverse_test_even(void** state)
+{
+		size_t testLength=10;
+		char testdata[]="abcd\n54321";
+		char resultdata[]="12345\ndcba" ;
+		
+		// Testing 
+		assert_memory_equal((uint8_t*)my_reverse((uint8_t*)testdata,testLength),resultdata,testLength) ;
+
+}
+
+/**
+TEST 4
+test for all charcters from 0 to 255
+*/
+
+static void my_reverse_test_all_characters(void** state)
+{
+		size_t testLength=256;
+		char testdata[256],resultdata[256];
+		int i;
+		
+		for(i=0;i<256;i++)
+		{
+			*(testdata+i)=i;
+			*(resultdata+i)=255-i;
+		}
+		
+		// Testing that the values starting from location testdata after reversal are same as in resultdata which was originally setup to be in reverse
+		assert_memory_equal((uint8_t*)my_reverse((uint8_t*)testdata,testLength),resultdata,testLength) ;
+
+}
+
+static void big_to_little32_test_null(void** state)
+{
+		size_t testLength=10;
+		
+		uint32_t * big_to_little32_data=NULL;
+		
+		// Testing 
+		assert_int_equal(big_to_little32(big_to_little32_data,testLength),99) ;
+}
+
+static void little_to_big32_test_null(void** state)
+{
+		size_t testLength=10;
+		
+		uint32_t * little_to_big32_data=NULL;
+		
+		// Testing 
+		assert_int_equal(little_to_big32(little_to_big32_data,testLength),99) ;
+}
+
 
 int main (void)
 {
 	const struct CMUnitTest tests[] =
 	{
-		cmocka_unit_test(test_my_memset),
-		cmocka_unit_test(test_my_memzero),
+		cmocka_unit_test(my_memmove_test_null_1),
+		cmocka_unit_test(my_memset_test_null),
+		cmocka_unit_test(my_memset_test),
+		cmocka_unit_test(my_memzero_test_null),
+		cmocka_unit_test(my_memzero_test),
+		cmocka_unit_test(my_reverse_test_null),
+		cmocka_unit_test(my_reverse_test_odd),
+		cmocka_unit_test(my_reverse_test_even),
+		cmocka_unit_test(my_reverse_test_all_characters),
+		cmocka_unit_test(big_to_little32_test_null),
+		cmocka_unit_test(little_to_big32_test_null),
+		
 	};
 	
 	return cmocka_run_group_tests(tests,NULL,NULL);
 
 }
+
+
+
