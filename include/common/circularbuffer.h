@@ -103,6 +103,6 @@ CB_status CB_init(uint8_t* source_buffer, uint8_t length);
 
 
 
-#endif MY_CIRCULARBUFFER // End of my_circularbuffer.h
+#endif CIRCULARBUFFER // End of my_circularbuffer.h
 
 
