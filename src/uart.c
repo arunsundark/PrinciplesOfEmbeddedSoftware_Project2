@@ -1,16 +1,15 @@
 /**
-*@file my_uart.c
-*@brief UART usage functions for KL25Z
+*@file uart.c
+*@brief UART0 usage functions for KL25Z
 *@Author Aakash Kumar/ArunSundar
 *@date Oct 16 2017
 
 */
 
 #include "uart.h"
+#include "conversion.h"
 
 // Uses UART0 on the FRDM Board
-
-int i=0;// index used in for loops
 
 /**
 @brief Configures the UART to given settings 
@@ -71,12 +70,13 @@ void UART_send(uint8_t * data)
 */
 void UART_send_n(uint8_t * src, size_t length)
 {
+	int j=0;
 	if(src!=NULL && length >0)
 	{
 		
-		for(i=0;i<length;i++)
+		for(j=0;j<length;j++)
 		{
-			UART_send((src+i)); // Send one character at a time from the block of data
+			UART_send((src+j)); // Send one character at a time from the block of data
 			// The UART_Send function will take care of not writing when the buffer is not empty.
 		}
 	}
@@ -112,11 +112,13 @@ uint8_t * UART_receive(uint8_t * dst)
 */
 uint8_t * UART_receive_n(uint8_t * dst, size_t length)
 {
+	int j=0;
+
 	if(dst!=NULL && length >0)
 	{
-		for(int i=0;i<length;i++)
+		for(j=0;j<length;j++)
 		{
-			UART_receive((dst+i));
+			UART_receive((dst+j));
 		}
 		return dst;
 	}
@@ -132,11 +134,17 @@ Clears associated flags once the interrupt is serviced.
 */
 void UART0_IRQHandler()
 {
-	uint8_t b;
+	uint8_t b,c,d;
+	int e;
 
-	if (UART0_S1&UART_S1_RDRF_MASK) // If data is received send it back after incrementing
+	if (UART0_S1&UART_S1_RDRF_MASK) // If data is received send it back after incrementing by 1
 	  {
-		b=(UART0_D)+1;
-		UART_send(&b);
+		b=(UART0_D);
+		e=CB_buffer_add_item(rx_cb,b);
+		d=my_itoa(e,&c,10);
+		UART_send_n(&c,d);
+
+
+		// Clear Interrupt
 	  }
 }

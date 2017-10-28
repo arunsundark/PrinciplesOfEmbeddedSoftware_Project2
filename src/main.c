@@ -3,7 +3,7 @@
 #include "conversion.h"
 #include "platform.h"
 #include "circularbuffer.h"
-
+//#include "uart.h"
 
 int main()
 {
@@ -24,15 +24,30 @@ int main()
 
 
 #ifndef NOPRINTDEFAULT
+	/*
+	uint8_t test_data[16]="UART_Initialized";
+
+	uint8_t newline[1]="\n";
+	UART_configure(); // Initialize UART0
+
+    // interrupt and NVIC functions from core_cm0plus.h
+    NVIC_ClearPendingIRQ(UART0_IRQn); // Clear pending UART interrupts from NVIC ICPR register
+    NVIC_EnableIRQ(UART0_IRQn); // Enable UART0 interrupt in NVIC ISER
+    NVIC_SetPriority(UART0_IRQn,2); //Set priority of 2 for UART0 interrupt
+    __enable_irq(); // Enable global interrupts
+
+    UART_send_n(test_data,16);
+    UART_send(newline);
+	*/
 	
-	CB_t * my_cb=malloc(sizeof(CB_t));
+	
 	uint8_t *a=malloc(1*sizeof(uint8_t));
 	
-	printf("CB location %p",my_cb);
-	printf("\n%d",CB_init(my_cb,10));
-	printf("\ncreated\n");
+	//printf("CB location %p",my_cb);
+	//printf("\n%d",CB_init(my_cb,10));
+	//printf("\ncreated\n");
 	CB_buffer_add_item(my_cb,'e');
-	printf("\nadded\n");
+	//printf("\nadded\n");
 	//printf("\n%c\n",*a);
 	//printf("\n%p\n",my_cb->head);
 	//printf("\n%d\n",my_cb->tail);
@@ -40,8 +55,8 @@ int main()
 	//printf("\n%x\n",my_cb);
 	
 	CB_buffer_remove_item(my_cb,a);
-	printf("\n removed");
-	printf("\n%c\n",*a);
+	//printf("\n removed");
+	//printf("\n%c\n",*a);
 	
 	CB_destroy(my_cb);
 	

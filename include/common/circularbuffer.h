@@ -9,6 +9,10 @@
 #define CIRCULARBUFFER
 
 #include<stdint.h>
+#include<stdio.h>
+#include<stdlib.h>
+
+
 typedef struct
 {	
 	uint8_t* data;
@@ -29,10 +33,6 @@ typedef enum
 
 
 
-
-
-
-
 CB_status CB_buffer_add_item(CB_t* source_ptr,uint8_t value);
 /*
 @brief Add a new data to the circular buffer 
@@ -43,7 +43,7 @@ CB_status CB_buffer_add_item(CB_t* source_ptr,uint8_t value);
 */
 
 
-CB_status CB_buffer_remove_item(CB_t* source_ptr, uint8_t value);
+CB_status CB_buffer_remove_item(CB_t* source_ptr, uint8_t * value);
 /*
 @brief remove a new data to the circular buffer 
 @param CB_t* source_buffer the input buffer from which the data is to be removed
@@ -92,7 +92,7 @@ CB_status CB_init(CB_t* source_buffer, uint8_t length);
 */
 
 
-CB_status CB_destroy(CB_t* source_ptr)
+CB_status CB_destroy(CB_t* source_ptr);
 /*
 @brief frees memory allocated for circular buffer 
 @param CB_t* source_buffer the pointer to the buffer which is initialised 
@@ -102,6 +102,6 @@ CB_status CB_destroy(CB_t* source_ptr)
 
 
 
-#endif CIRCULARBUFFER // End of my_circularbuffer.h
+#endif // End of my_circularbuffer.h
 
 
