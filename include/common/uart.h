@@ -9,6 +9,8 @@
 #define UART_H
 
 #include<stdint.h>
+#include<stdlib.h>
+#include"MKL25Z4.h"
 
 #define BAUD_RATE 115200
 
@@ -21,7 +23,7 @@ void UART_configure(void);
 
 */
 
-void UART_Send(uint8_t * data);
+void UART_send(uint8_t * data);
 /*
 @brief Sends a single byte of data to UART
 @param *data byte pointer to location of data to be transmitted
@@ -65,4 +67,4 @@ Clears associated flags once the interrupt is serviced.
 */
 
 
-#endif UART_H // End of my uart.h
+#endif// End of my uart.h

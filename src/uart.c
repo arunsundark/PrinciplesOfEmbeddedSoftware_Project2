@@ -6,22 +6,6 @@
 
 */
 
-/**
-For reference here only, this is already defined in MKL25Z.h
-#define UART0_BDH                                UART0_BDH_REG(UART0)
-#define UART0_BDL                                UART0_BDL_REG(UART0)
-#define UART0_C1                                 UART0_C1_REG(UART0)
-#define UART0_C2                                 UART0_C2_REG(UART0)
-#define UART0_S1                                 UART0_S1_REG(UART0)
-#define UART0_S2                                 UART0_S2_REG(UART0)
-#define UART0_C3                                 UART0_C3_REG(UART0)
-#define UART0_D                                  UART0_D_REG(UART0)
-#define UART0_MA1                                UART0_MA1_REG(UART0)
-#define UART0_MA2                                UART0_MA2_REG(UART0)
-#define UART0_C4                                 UART0_C4_REG(UART0)
-#define UART0_C5 
-*/
-
 #include "uart.h"
 
 // Uses UART0 on the FRDM Board
@@ -36,22 +20,25 @@ int i=0;// index used in for loops
 */
 void UART_configure(void)
 {
-	/* Enable the pins for the selected UART */
-	/* Enable the UART_TXD function on PTA1 */
-	PORTA_PCR1 = PORT_PCR_MUX(0x2);
-	/* Enable the UART_TXD function on PTA2 */
-	PORTA_PCR2 = PORT_PCR_MUX(0x2);
+
+	SIM_SCGC4|=	SIM_SCGC4_UART0_MASK; // Enable clock gate to UARTO in System Clock Gating Control Register
+
+	UART0_C2 &= ~(UART0_C2_TE_MASK | UART0_C2_RE_MASK); // Ensure UART0 is disabled before changing registers
+
+    SIM_SCGC5 |= SIM_SCGC5_PORTA(1) ;// Enable port clock for portA
+
+    // Enable the pins for the selected UART
+	PORTA_PCR1 = PORT_PCR_MUX(0x2); // Enable the UART_TXD function on PTA1
+
+	PORTA_PCR2 = PORT_PCR_MUX(0x2); //Enable the UART_TXD function on PTA2
+
 	SIM_SOPT2 |= SIM_SOPT2_UART0SRC(1); // select the PLLFLLCLK as UART0 clock source
-	
-	mcg_clk_hz = 21000000; //FEI mode
+
     SIM_SOPT2 &= ~SIM_SOPT2_PLLFLLSEL_MASK; // clear PLLFLLSEL to select the FLL for this clock source
-    uart0_clk_khz = (mcg_clk_hz / 1000); // the uart0 clock frequency will equal the FLL frequency
-	uart0_clk_khz = ((mcg_clk_hz / 2) / 1000); // UART0 clock frequency will equal half the PLL frequency
+
+    UART0_BDL=(0x20 & UART_BDL_SBR_MASK);// set BDL to 32 for 38400 baud : TODO change to macro
 	
-	
-	
-	
-	/* Enable receiver and transmitter */
+	// Enable receiver and transmitter
     UART0_C2 |= (UART0_C2_TE_MASK
                     | UART0_C2_RE_MASK );
 }
@@ -63,7 +50,7 @@ void UART_configure(void)
 @return	None
 
 */
-void UART_Send(uint8_t * data)
+void UART_send(uint8_t * data)
 {
 	if(data !=NULL) 
 	{
@@ -72,6 +59,7 @@ void UART_Send(uint8_t * data)
 		
       UART0_D = *data; // Write data to UART Data register to transmit the data once buffer is empty
 	}
+
 }
 
 /**
@@ -83,15 +71,16 @@ void UART_Send(uint8_t * data)
 */
 void UART_send_n(uint8_t * src, size_t length)
 {
-	if(src!=NULL and length >0)
+	if(src!=NULL && length >0)
 	{
 		
 		for(i=0;i<length;i++)
 		{
-			UART_Send(*(src+i)); // Send one character at a time from the block of data
+			UART_send((src+i)); // Send one character at a time from the block of data
 			// The UART_Send function will take care of not writing when the buffer is not empty.
 		}
 	}
+
 }
 
 /**
@@ -108,9 +97,10 @@ uint8_t * UART_receive(uint8_t * dst)
 		while (!(UART0_S1 & UART0_S1_RDRF_MASK)); // Wait until RDRF flag is set, indicating data in buffer.
 		// While loop does not exit until RDRF is 1
 	  
-		*dst = UART0_D_REG(channel); // Read data from buffer when available
+		*dst = UART0_D; // Read data from buffer when available
 		return dst; // Return pointer to received data
 	}
+	else return 0;
 }
 
 /**
@@ -122,14 +112,15 @@ uint8_t * UART_receive(uint8_t * dst)
 */
 uint8_t * UART_receive_n(uint8_t * dst, size_t length)
 {
-	if(dst!=NULL and length >0)
+	if(dst!=NULL && length >0)
 	{
 		for(int i=0;i<length;i++)
 		{
-			UART_receive(*(dst+i));
+			UART_receive((dst+i));
 		}
 		return dst;
 	}
+	else return 0;
 }
 
 /**
@@ -141,4 +132,5 @@ Clears associated flags once the interrupt is serviced.
 */
 void UART_IRQHandler()
 {
+
 }
