@@ -40,9 +40,7 @@ void UART_configure(void)
 	
     UART0_C2 |= UART_C2_RIE_MASK;// Enable UART0 receive interrupt
 
-	// Enable receiver and transmitter
-    UART0_C2 |= (UART0_C2_TE_MASK
-                    | UART0_C2_RE_MASK );
+    UART0_C2 |= (UART0_C2_TE_MASK| UART0_C2_RE_MASK );// Enable receiver and transmitter
 }
 
 
@@ -141,7 +139,4 @@ void UART0_IRQHandler()
 		b=(UART0_D)+1;
 		UART_send(&b);
 	  }
-
-	//a=(*UART_receive(ptr))+1;
-	  //  	UART_send(&a);
 }
