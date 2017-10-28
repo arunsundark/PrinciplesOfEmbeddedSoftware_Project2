@@ -28,7 +28,7 @@ CB_status CB_init(CB_t* source_ptr, uint8_t length)
 	/*checks for null pointer */
 	CB_status a;
 
-	if(source_ptr==NULL && length==0)
+	if(source_ptr==NULL || length>0)
 	{
 		return null_error;
 	}
