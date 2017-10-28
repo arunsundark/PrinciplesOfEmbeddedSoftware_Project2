@@ -33,7 +33,7 @@ CB_status CB_init(CB_t* source_ptr, uint8_t length)
 	else 
 	{       /* initializes the pointers to the circular buffer*/
 
-		source_ptr->data=(uint8_t*)malloc(length*sizeof(uint8_t));
+		source_ptr->data=(uint8_t*)calloc(length,sizeof(uint8_t));
 
 		source_ptr->head=source_ptr->data;
 		
