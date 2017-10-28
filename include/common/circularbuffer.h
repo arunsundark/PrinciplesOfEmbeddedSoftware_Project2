@@ -43,7 +43,7 @@ CB_status CB_buffer_add_item(CB_t* source_ptr,uint8_t value);
 */
 
 
-CB_status CB_buffer_remove_item(CB_t* source_ptr, uint8_t value);
+CB_status CB_buffer_remove_item(CB_t* source_ptr, uint8_t* value);
 /*
 @brief remove a new data to the circular buffer 
 @param CB_t* source_buffer the input buffer from which the data is to be removed

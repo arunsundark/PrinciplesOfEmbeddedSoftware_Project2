@@ -1,67 +1,76 @@
-#include"project2.h"
-#include"uart.h"
-#include"circularbuffer.h"
-
-
-
-/***
-#define alphabet_condition1 (((*(source_ptr->data+index))>=65) | ((*(source_ptr->data+index)) <=90))
-#define alphabet_condition2 (((*(source_ptr->data+index))>=97) | ((*(source_ptr->data+index)) <=122))
-#define number_condition1   (((*(source_ptr->data+index))>=48) | ((*(source_ptr->data+index)) <=57))
-#define punctuation_condition1   (((*(source_ptr->data+index))==34) | ((*(source_ptr->data+index)) ==33))
-#define punctuation_condition2   (((*(source_ptr->data+index))>=39) | ((*(source_ptr->data+index)) <=41))
-#define punctuation_condition3   (((*(source_ptr->data+index))>=44) | ((*(source_ptr->data+index)) <=46))
-#define punctuation_condition4   (((*(source_ptr->data+index))==58) | ((*(source_ptr->data+index)) ==59))
-#define punctuation_condition5   (((*(source_ptr->data+index))==125) | ((*(source_ptr->data+index)) ==123))
-#define punctuation_condition6   (((*(source_ptr->data+index))==63) | ((*(source_ptr->data+index)) ==95))
-#define misc_condition1   (((*(source_ptr->data+index))>=1) | ((*(source_ptr->data+index)) <=32))
-***/
-
-
-/*
-static uint16_t alphabet_count=0;
-static uint16_t numeric_count=0;
-static uint16_t punctuation_count=0;
-static uint16_t misc_count=0;
+/**
+*@file project2.c
+*@brief project2 implementation is done from this file 
+*@Author Aakash Kumar/ArunSundar
+*@date Oct 28 2017
 
 */
 
 
+
+
+
+
+
+
+#include"project2.h"
+
+
+
+/***
+#define alphabet_condition1 (((*removed_data)>=65) && ((*removed_data) <=90))
+#define alphabet_condition2 (((*removed_data)>=97) && ((*removed_data) <=122))
+#define number_condition1   (((*removed_data)>=48) && ((*removed_data) <=57))
+#define punctuation_condition1   (((*removed_data)==34) | ((*removed_data)==33))
+#define punctuation_condition2   (((*removed_data)>=39) && ((*removed_data)<=41))
+#define punctuation_condition3   (((*removed_data)>=44) && ((*removed_data) <=46))
+#define punctuation_condition4   (((*removed_data)==58) | ((*removed_data) ==59))
+#define punctuation_condition5   (((*removed_data)==125) |((*removed_data) ==123))
+#define punctuation_condition6   (((*removed_data)==63) | ((*removed_data) ==95))
+#define misc_condition1   (((*removed_data)>=1) && ((*removed_data) <=32))
+
+***/
+
+
+
+
+
 uint8_t* dataprocesser(CB_t* source_ptr,uint8_t* count)
 {
-
+uint8_t * removed_data=(uint8_t*)malloc(sizeof(uint8_t));
 uint8_t index=0;
-
-
-	while(*(source_ptr->data+index)!='\0')
-	{
-		if(alphabet_condition1 | alphabet_condition2)
-		{
-			count[0]++;
-		
-		}
+	while(source_ptr->count >0)
+	{		CB_status st=CB_buffer_remove_item(source_ptr,removed_data);
+			
+			if(alphabet_condition1 | alphabet_condition2)
+			{
+				count[0]++;
+				
+			}
 	
-		if(number_condition1)
-		{
-			count[1]++;
-		}
+			if(number_condition1)
+			{	
+				count[1]++;
+			}
 
-		if(punctuation_condition1 || punctuation_condition2 || punctuation_condition3 || punctuation_condition4 || punctuation_condition5 || punctuation_condition6)
-		{
-			count[2]++;
-		}
+			if(punctuation_condition1 || punctuation_condition2 || punctuation_condition3 || punctuation_condition4 || punctuation_condition5 || punctuation_condition6)
+			{	
+				count[2]++;
+			}
 		
-		if(misc_condition1)
-		{
-			count[3]++;
-		}
+			if(misc_condition1)
+			{	
+				count[3]++;
+			}
 
-
-		index++;
+			
+			index++;
+		
 	}
+
+
 return count;
 }
-
 
 
 
