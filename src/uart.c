@@ -38,6 +38,8 @@ void UART_configure(void)
 
     UART0_BDL=(0x20 & UART_BDL_SBR_MASK);// set BDL to 32 for 38400 baud : TODO change to macro
 	
+    UART0_C2 |= UART_C2_RIE_MASK;// Enable UART0 receive interrupt
+
 	// Enable receiver and transmitter
     UART0_C2 |= (UART0_C2_TE_MASK
                     | UART0_C2_RE_MASK );
@@ -130,7 +132,16 @@ Clears associated flags once the interrupt is serviced.
 @return none
 
 */
-void UART_IRQHandler()
+void UART0_IRQHandler()
 {
+	uint8_t b;
 
+	if (UART0_S1&UART_S1_RDRF_MASK) // If data is received send it back after incrementing
+	  {
+		b=(UART0_D)+1;
+		UART_send(&b);
+	  }
+
+	//a=(*UART_receive(ptr))+1;
+	  //  	UART_send(&a);
 }
