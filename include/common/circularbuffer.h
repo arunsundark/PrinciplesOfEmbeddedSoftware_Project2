@@ -36,7 +36,7 @@ typedef enum
 CB_status CB_buffer_add_item(CB_t* source_ptr,uint8_t value);
 /*
 @brief Add a new data to the circular buffer 
-@param uint8_t* source_buffer the input buffer to which the data is to be added
+@param CB_t* source_buffer the input buffer to which the data is to be added
 @param data data to be added to the buffer
 @return  CB_status status of the operation
 
@@ -46,7 +46,7 @@ CB_status CB_buffer_add_item(CB_t* source_ptr,uint8_t value);
 CB_status CB_buffer_remove_item(CB_t* source_ptr, uint8_t value);
 /*
 @brief remove a new data to the circular buffer 
-@param uint8_t* source_buffer the input buffer from which the data is to be removed
+@param CB_t* source_buffer the input buffer from which the data is to be removed
 @param data variable to store the data to be removed from the buffer
 @return  CB_status status of the operation
 
@@ -54,7 +54,7 @@ CB_status CB_buffer_remove_item(CB_t* source_ptr, uint8_t value);
 CB_status CB_is_full(CB_t* source_ptr);
 /*
 @brief checks if the buffer is full
-@param uint8_t* source_buffer the input buffer which is to be checked
+@param CB_t* source_buffer the input buffer which is to be checked
 @return  CB_status status of the operation or an error code
 
 */
@@ -62,7 +62,7 @@ CB_status CB_is_full(CB_t* source_ptr);
 CB_status CB_is_empty(CB_t* source_ptr);
 /*
 @brief checks if the buffer is empty
-@param uint8_t* source_buffer the input buffer which is to be checked
+@param CB_t* source_buffer the input buffer which is to be checked
 @return  CB_status status of the operation or an error code
 
 */
@@ -85,18 +85,17 @@ CB_status CB_peek(CB_t* source_buffer, uint8_t position, uint8_t* peeked_ptr);
 CB_status CB_init(CB_t* source_buffer, uint8_t length);
 /*
 @brief reserves some memory for circular buffer 
-@param uint8_t* source_buffer the pointer to the buffer which is initialised 
+@param CB_t* source_buffer the pointer to the buffer which is initialised 
 @param length number of elements to allocated memory in the circular buffer
 @return  CB_status status of the operation
 
 */
 
 
-CB_status CB_init(uint8_t* source_buffer, uint8_t length);
+CB_status CB_destroy(CB_t* source_ptr)
 /*
-@brief reserves some memory for circular buffer 
-@param uint8_t* source_buffer the pointer to the buffer which is initialised 
-@param length number of elements to allocated memory in the circular buffer
+@brief frees memory allocated for circular buffer 
+@param CB_t* source_buffer the pointer to the buffer which is initialised 
 @return  CB_status status of the operation
 
 */
