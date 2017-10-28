@@ -11,8 +11,11 @@
 #include<stdint.h>
 #include<stdlib.h>
 #include"MKL25Z4.h"
+#include "circularbuffer.h"
 
 #define BAUD_RATE 115200
+
+extern CB_t * rx_cb;
 
 void UART_configure(void);
 /*

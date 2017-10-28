@@ -3,7 +3,9 @@ MAINSOURCE= main.c
 
 COMMONSOURCES= debug.c\
 	memory.c\
-	conversion.c
+	conversion.c\
+	circularbuffer.c\
+	uart.c
 	
 INCLUDES=../include/common
 

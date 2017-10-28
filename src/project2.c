@@ -1,3 +1,4 @@
+
 /**
 *@file project2.c
 *@brief project2 implementation is done from this file 
@@ -13,7 +14,10 @@
 
 
 
-#include"project2.h"
+
+#include "project2.h"
+#include "uart.h"
+#include "circularbuffer.h"
 
 
 
@@ -85,6 +89,9 @@ function call to recieve uart data;
 function call to do data processing in uart;
 functonal call to transmit statistics to host mcahine 
 display in host machine
+
+*/
+
 
 
 }
