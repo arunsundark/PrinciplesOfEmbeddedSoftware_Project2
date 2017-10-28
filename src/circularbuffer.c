@@ -26,32 +26,30 @@
 CB_status CB_init(CB_t* source_ptr, uint8_t length)
 {	
 	/*checks for null pointer */
-
+	CB_status a;
 
 	if(source_ptr==NULL && length==0)
 	{
-		return nullerror;
+		return null_error;
 	}
 	else 
 	{       /* initializes the pointers to the circular buffer*/
 
-		source_ptr->data=(int*)malloc(length*sizeof(int));
+		source_ptr->data=(uint8_t*)malloc(length*sizeof(uint8_t));
 
 		source_ptr->head=source_ptr->data;
-
+		
 		source_ptr->tail=source_ptr->head;
-
+		
 		source_ptr->length=length;
-		//printf("%d \n",source_ptr->length);
-
+		
 		source_ptr->limit=source_ptr->data+(length-1);
-
+		
 		source_ptr->count=0;
 
 		return success;	
 	}
 }
-
 
 /**
 @brief  Adds data to the circular buffer 
@@ -70,7 +68,7 @@ CB_status CB_buffer_add_item(CB_t* source_ptr,uint8_t value)
 
 	if(source_ptr==NULL)
 	{
-		return nullerror;
+		return null_error;
 	}
 
 	else
@@ -78,21 +76,27 @@ CB_status CB_buffer_add_item(CB_t* source_ptr,uint8_t value)
 
 		if(source_ptr->count == source_ptr->length)
 
-		{	return bufferfull;
+		{	
+			return buffer_full;
 			
 
 		}
 		else
 		{	/* For adding when the buffer is not full */
 
-			if(source_ptr->head==source_ptr->limit)
+			if(source_ptr->head>source_ptr->limit)
 			{	source_ptr->head=source_ptr->data;
-				source_ptr->head=value;
+				*(source_ptr->head)=value;
+				source_ptr->head+=1;
+				
 	   		}
 			else
 			{
+
+				*(source_ptr->head)=value;
 				source_ptr->head+=1;
-				source_ptr->head=value;
+				
+				
 			}
 
 			
@@ -105,6 +109,7 @@ CB_status CB_buffer_add_item(CB_t* source_ptr,uint8_t value)
 }
 
 
+
 /**
 @brief  Removes data to the circular buffer 
 
@@ -115,52 +120,48 @@ CB_status CB_buffer_add_item(CB_t* source_ptr,uint8_t value)
 @return returns the status of the operation on the buffer
 */
 
-
 CB_status CB_buffer_remove_item(CB_t* source_ptr,uint8_t* value)
 {
 	/*checks for null pointer */
 	 
 	if(source_ptr==NULL)
 	{
-		return nullerror;
+		return null_error;
 	}
 
 	else
 	{
 		/* gets the value that is removed */
-
+		
 		*value=*(source_ptr->tail);
-			
+		
 		/* checks corner case and assigns tails to the base address */
 
 		if(source_ptr->tail==source_ptr->limit)
 		{
-			printf("your code works \n");
+			
+			
 
-			printf("%p \n",source_ptr->tail);
-
-			printf("your code works \n");
+			
 
 			source_ptr->tail=source_ptr->data;
+			
 		}
 		else 
 		{ 
 
 			/* for regular cases other than the corner cases */	
 
-			printf("your code doesnt work \n");
+			
 
-			printf("%p \n",source_ptr->tail);
+			
 
 			source_ptr->tail+=1;
 
-			printf("your code doesnt work \n");
-
-			printf("%p \n",source_ptr->tail);
-
-			printf("%d \n",*(source_ptr->tail));
+			
 		}
 		source_ptr->count--;
+
 		return success;
 	}
 }
@@ -187,7 +188,7 @@ CB_status CB_peek(CB_t* source_ptr,uint8_t position, uint8_t* peeked_ptr)
 
 	if(source_ptr == NULL)
 	{
-		return nullerror;
+		return null_error;
 	}
 
 	else
@@ -220,6 +221,7 @@ CB_status CB_peek(CB_t* source_ptr,uint8_t position, uint8_t* peeked_ptr)
 }
 
 
+
 /**
 @brief  Checks if the circular buffer is full 
 
@@ -238,7 +240,7 @@ CB_status CB_is_full(CB_t* source_ptr)
 
 	if(source_ptr==NULL)
 	{
-		return nullerror;
+		return null_error;
 	}
 
 	else
@@ -274,7 +276,7 @@ CB_status CB_is_empty(CB_t* source_ptr)
 
 	if(source_ptr==NULL)
 	{
-		return nullerror;
+		return null_error;
 	}
 	else 
 	{
@@ -309,7 +311,7 @@ CB_status CB_destroy(CB_t* source_ptr)
 
 	if(source_ptr==NULL)
 	{
-		return nullerror;
+		return null_error;
 	}
 	else
 	{

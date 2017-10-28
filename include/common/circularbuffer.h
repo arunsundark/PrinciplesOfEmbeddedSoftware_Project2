@@ -11,9 +11,10 @@
 #include<stdint.h>
 typedef struct
 {	
-	uint8_t *buffer_pointer;
-	uint8_t *tail;
-	uint8_t *head;
+	uint8_t* data;
+	uint8_t* tail;
+	uint8_t* head;
+	uint8_t* limit;
 	size_t length;
 	uint8_t count;
 } CB_t;
@@ -22,7 +23,7 @@ typedef enum
 {
 	buffer_empty,
 	buffer_full,
-	sucess,
+	success,
 	null_error
 }CB_status;
 
