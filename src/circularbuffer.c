@@ -9,7 +9,7 @@
 
 
 
-#include<circularbuffer.h>
+#include "circularbuffer.h"
 
 /**
 @brief  Initializes the data memebers of the CB_t structure
@@ -26,9 +26,7 @@
 CB_status CB_init(CB_t* source_ptr, uint8_t length)
 {	
 	/*checks for null pointer */
-	CB_status a;
-
-	if(source_ptr==NULL || length>0)
+	if(source_ptr==NULL || length<=0)
 	{
 		return null_error;
 	}
@@ -46,9 +44,10 @@ CB_status CB_init(CB_t* source_ptr, uint8_t length)
 		source_ptr->limit=source_ptr->data+(length-1);
 		
 		source_ptr->count=0;
-
+		
 		return success;	
 	}
+	
 }
 
 /**
@@ -132,17 +131,12 @@ CB_status CB_buffer_remove_item(CB_t* source_ptr,uint8_t* value)
 	else
 	{
 		/* gets the value that is removed */
-		
 		*value=*(source_ptr->tail);
 		
 		/* checks corner case and assigns tails to the base address */
 
 		if(source_ptr->tail==source_ptr->limit)
 		{
-			
-			
-
-			
 
 			source_ptr->tail=source_ptr->data;
 			
@@ -186,12 +180,7 @@ CB_status CB_peek(CB_t* source_ptr,uint8_t position, uint8_t* peeked_ptr)
 
 	/*checks for null pointer */
 
-	if(source_ptr == NULL)
-	{
-		return null_error;
-	}
-
-	else
+	if(source_ptr != NULL)
 	{
 
 		/* checks for non-corner cases */
@@ -217,7 +206,13 @@ CB_status CB_peek(CB_t* source_ptr,uint8_t position, uint8_t* peeked_ptr)
  
 
 		}
+		else return null_error;
 	}
+	else	
+	{
+		return null_error;
+	}
+
 }
 
 
@@ -253,6 +248,7 @@ CB_status CB_is_full(CB_t* source_ptr)
 			printf("buffer is full");
 			return buffer_full;
 		}
+		else return null_error;
 	}
 }
 
@@ -289,6 +285,7 @@ CB_status CB_is_empty(CB_t* source_ptr)
 
 			return buffer_empty;
 		}
+		else return null_error;
 	}
 }
 
