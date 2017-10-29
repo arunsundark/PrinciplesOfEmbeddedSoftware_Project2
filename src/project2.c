@@ -24,7 +24,7 @@
 
 ***/
 
-uint8_t* dataprocesser(CB_t* source_ptr,uint32_t* count)
+uint32_t* dataprocesser(CB_t* source_ptr,uint32_t* count)
 {
 uint8_t * removed_data=(uint8_t*)malloc(sizeof(uint8_t));
 uint8_t index=0;

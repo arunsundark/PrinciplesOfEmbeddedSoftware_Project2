@@ -13,7 +13,18 @@
 #include"MKL25Z4.h"
 #include "circularbuffer.h"
 
-#define BAUD_RATE 115200
+#define BAUD 38400
+
+
+#if(BAUD==115200)
+#define	osr_val 0x07
+#define bdl_val 0x19
+#endif
+
+#if(BAUD==38400)
+#define osr_val 0x14
+#define bdl_val 0x1A
+#endif
 
 extern CB_t * rx_cb;
 
@@ -34,7 +45,7 @@ void UART_send(uint8_t * data);
 
 */
 
-void UART_send_n(uint8_t * src, size_t length);
+int UART_send_n(uint8_t * src, size_t length);
 /*
 @brief Sends a block of data to the UART
 @param *src byte pointer to start location of memory block to be transmitted

@@ -11,6 +11,7 @@
 
 // Uses UART0 on the FRDM Board
 
+
 /**
 @brief Configures the UART to given settings 
 @param 

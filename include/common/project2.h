@@ -1,7 +1,9 @@
 #include<stdint.h>
-#include"circularbuffer.h"
-#include"uart.h"
 #include<stdlib.h>
+
+#include "circularbuffer.h"
+#include "uart.h"
+#include "conversion.h"
 
 #define alphabet_condition1 (((*removed_data)>=65) && ((*removed_data) <=90))
 #define alphabet_condition2 (((*removed_data)>=97) && ((*removed_data) <=122))
@@ -21,7 +23,9 @@
 
 */
 
-uint8_t* dataprocesser(CB_t* source_ptr,uint32_t* count);
+uint32_t* dataprocesser(CB_t* source_ptr,uint32_t* count);
+
+void project2(void);
 
 
 
