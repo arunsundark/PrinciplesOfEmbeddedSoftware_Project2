@@ -62,8 +62,7 @@ uint8_t index=0;
 return count;
 }
 
-
-CB_t * rx_cb; // Receive Circular Buffer
+CB_t * rx_cb,* tx_cb; // Receive and Transmit Circular Buffers
 
 uint8_t test_data[19]="UART0 Initialized\n\r";
 uint8_t num_alphabets[21]="\n\rNo of Alphabets is:";
@@ -71,11 +70,32 @@ uint8_t num_integers[20]="\n\rNo of Integers is:";
 uint8_t num_punctuations[24]="\n\rNo of Punctuations is:";
 uint8_t num_specialchars[30]="\n\rNo of Special Characters is:";
 
-uint32_t char_count[4]={0,0,0,0},toTx;
+
 uint8_t nextline[2]="\n\r";
 uint8_t  a[4];
 int display_after_lim=25;
 
+void dumpstatistics(CB_t* source_ptr,CB_t* destination_ptr,uint32_t* char_count)
+{
+	int toAddLength;
+	uint8_t toAddData[5];
+	dataprocesser(source_ptr,char_count);
+	    			for(int k=0;k<4;k++)
+	    			{
+	    				toAddLength=my_itoa(*(char_count+k),toAddData,10);
+
+	    				if(k==0) UART_send_n(num_alphabets,21);
+	    				if(k==1) UART_send_n(num_integers,20);
+	    				if(k==2) UART_send_n(num_punctuations,24);
+	    				if(k==3) UART_send_n(num_specialchars,30);
+
+	    				UART_send_n(toAddData,toAddLength);
+
+	    			}
+	    			UART_send_n(nextline,2);
+}
+
+uint32_t character_count[4]={0,0,0,0};
 
 void project2(void)
 {
@@ -91,6 +111,9 @@ void project2(void)
     rx_cb=malloc(sizeof(CB_t));
     CB_init(rx_cb,100);
 
+    tx_cb=malloc(sizeof(CB_t));
+    CB_init(tx_cb,100);
+
     UART_send_n(test_data,17);
     UART_send_n(nextline,2);
 
@@ -99,20 +122,8 @@ void project2(void)
 
     	if(rx_cb->count == display_after_lim)
     	{
-    		dataprocesser(rx_cb,char_count);
-    			for(int k=0;k<4;k++)
-    			{
-    				toTx=my_itoa(*(char_count+k),a,10);
-
-    				if(k==0) UART_send_n(num_alphabets,21);
-    				if(k==1) UART_send_n(num_integers,20);
-    				if(k==2) UART_send_n(num_punctuations,24);
-    				if(k==3) UART_send_n(num_specialchars,30);
-
-    				UART_send_n(a,toTx);
-
-    			}
-    			UART_send_n(nextline,2);
+    		dumpstatistics(rx_cb,character_count);
+    		// trigger transmit interrupt
     	}
 
     }
