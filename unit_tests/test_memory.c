@@ -7,7 +7,6 @@
 #include <string.h>
 
 #include "memory.h"
-#include "conversion.h"
 
 //****** memmove tests
 /***
@@ -167,27 +166,6 @@ static void my_reverse_test_all_characters(void** state)
 
 }
 
-static void big_to_little32_test_null(void** state)
-{
-		size_t testLength=10;
-		
-		uint32_t * big_to_little32_data=NULL;
-		
-		// Testing 
-		assert_int_equal(big_to_little32(big_to_little32_data,testLength),99) ;
-}
-
-static void little_to_big32_test_null(void** state)
-{
-		size_t testLength=10;
-		
-		uint32_t * little_to_big32_data=NULL;
-		
-		// Testing 
-		assert_int_equal(little_to_big32(little_to_big32_data,testLength),99) ;
-}
-
-
 int main (void)
 {
 	const struct CMUnitTest tests[] =
@@ -201,8 +179,6 @@ int main (void)
 		cmocka_unit_test(my_reverse_test_odd),
 		cmocka_unit_test(my_reverse_test_even),
 		cmocka_unit_test(my_reverse_test_all_characters),
-		cmocka_unit_test(big_to_little32_test_null),
-		cmocka_unit_test(little_to_big32_test_null),
 		
 	};
 	
