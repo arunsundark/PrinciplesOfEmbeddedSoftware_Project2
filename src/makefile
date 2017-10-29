@@ -7,11 +7,16 @@ CCBBB=arm-linux-gnueabihf-gcc
 
 # Compiler flags
 CSTD=c99
-CFLAGS=-Wall\
+
+COMMONCFLAGS=-Wall\
 	-std=$(CSTD)\
-	-g\
 #	-Werror\
 	-O0
+	
+HOSTCFLAGS=-g	
+
+CFLAGS=$(COMMONCFLAGS) $(HOSTCFLAGS)
+	
 
 include sources.mk
 
@@ -49,41 +54,12 @@ TOREMOVE=$(OFILEPATH)/*.o\
 	$(TESTOBJPATH)/*.d\
 	$(OFILEPATH)/*.dep\
 
-
-#if platform is beaglebone black 	
-#change compiler used
-ifeq ($(PLATFORM),BBB)
-CC = $(CCBBB)
-SIZETOOL=$(SIZETOOLBBB)
-else
-
-#if platform is KL25Z, change compiler used and linker flags 
-#and add additional startup code/Include files for KL25Z
-ifeq ($(PLATFORM),KL25Z)
-CC = arm-none-eabi-gcc
-SIZETOOL=arm-none-eabi-size
-DS=KL25Z
-INCLUDES+=-I ../include/CMSIS\
-	-I ../include/kl25z
-LDFLAGS=-T ../platform/MKL25Z128xxx4_flash.ld\
-	-march=armv6-m\
-	-mthumb -mcpu=cortex-m0\
-	-mfpu=fpv4-sp-d16\
-	--specs=nosys.specs
-SOURCES+=system_MKL25Z4.c\
-	startup_MKL25Z4.s
-OBJECTS+=$(addprefix $(OFILEPATH)/,$(SOURCES:.s=.o))
-endif
-endif
-
-#Path where file is transferred to in the BBB when using the upload target
-BBBPATH=/home/code/
-
 #declaring targets with folders to put them in
 CUR_TARGET=project2
 TARGET=$(CUR_TARGET).elf
 UPL_TARGET=project1_demo.elf
 TESTTARGET=../unit_tests/unittests.out
+DISPOUT=./$(TARGET)
 
 #folder paths to create .o files in seperate folder 
 #and not clutter the src folder
@@ -101,13 +77,54 @@ TESTOBJPATH=../unit_tests/obj
 COMMONOBJECTS:=$(addprefix $(OFILEPATH)/,$(COMMONSOURCES:%.c=%.o))
 
 #objects for build
-OBJECTS:=$(addprefix $(OFILEPATH)/,$(MAINSOURCE:%.c=%.o)) $(COMMONOBJECTS)
+OBJECTS=$(addprefix $(OFILEPATH)/,$(MAINSOURCE:%.c=%.o)) $(COMMONOBJECTS)
 
 #objects for test
 TESTOBJECTS:=$(addprefix $(TESTOBJPATH)/,$(TESTSOURCES:%.c=%.o)) $(COMMONOBJECTS)
 
 #list of dependencies
 DEPS:=$(addprefix $(OFILEPATH),$(OBJECTS:.o=.d))
+
+#if platform is beaglebone black 	
+#change compiler used
+ifeq ($(PLATFORM),BBB)
+CC = $(CCBBB)
+SIZETOOL=$(SIZETOOLBBB)
+DISPOUT=
+else
+
+#if platform is KL25Z, change compiler used and linker flags 
+#and add additional startup code/Include files for KL25Z
+ifeq ($(PLATFORM),KL25Z)
+CC = arm-none-eabi-gcc
+SIZETOOL=arm-none-eabi-size
+DS=KL25Z
+INCLUDES+=-I ../include/CMSIS\
+	-I ../include/kl25z
+KL25ZCFLAG=-march=armv6-m\
+	-mthumb -mcpu=cortex-m0plus\
+	-mfpu=fpv4-sp-d16\
+	-g3\
+	--specs=nosys.specs\
+	-fmessage-length=0\
+	-fsigned-char\
+	-ffunction-sections\
+	-fdata-sections\
+	-D"CPU_MKL25Z128VLK4"
+
+CFLAGS=$(COMMONCFLAGS) $(KL25ZCFLAG)
+	
+LDFLAGS=-T ../platform/MKL25Z128xxx4_flash.ld
+
+OBJECTS+=$(addprefix $(OFILEPATH)/,$(KL25ZSOURCES:.c=.o))	
+OBJECTS+=$(addprefix $(OFILEPATH)/,$(ASSOURCES:.s=.o))
+DISPOUT=
+endif
+endif
+
+#Path where file is transferred to in the BBB when using the upload target
+BBBPATH=/home/code/
+
 
 -include $(DEPS)
 
@@ -125,7 +142,7 @@ build:$(OBJECTS)
 	$(CC) $(OBJECTS) -I$(INCLUDES) $(CFLAGS) $(LDFLAGS) -o $(TARGET) -D$(DS) $(PS) -Xlinker -Map=$(OFILEPATH)/$(CUR_TARGET).map
 #	@echo "\n******Built" $(TARGET)"******\n"
 	$(SIZETOOL) $(OBJECTS) $(TARGET)
-	./$(TARGET)
+	$(DISPOUT)
 
 #building the executable for beaglebone black 
 #and transfer it directly to the board using scp
@@ -157,7 +174,7 @@ $(OFILEPATH)/%.s : %.s
 $(OFILEPATH)/%.o : %.c
 	mkdir $(OFILEPATH) -p
 #	$(CC) -MM $< -MF $(OFILEPATH)/$*.dep -I $(INCLUDES) $(CFLAGS) $(PS)
-	$(CC) -MMD -c $< -o $@ -I$(INCLUDES) $(CFLAGS) -D$(DS) $(LDFLAGS) $(PS)
+	$(CC) -MMD -c $< -o $@ -I$(INCLUDES) $(CFLAGS) -D$(DS) $(PS)
 #	@echo "\n******Built" $@"******"	
 
 #script to compile test C files	
