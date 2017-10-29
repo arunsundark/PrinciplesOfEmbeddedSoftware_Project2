@@ -7,11 +7,7 @@
 
 */
 
-
 #include "project2.h"
-#include "uart.h"
-#include "circularbuffer.h"
-
 
 
 /***
@@ -28,8 +24,7 @@
 
 ***/
 
-uint8_t* dataprocesser(CB_t* source_ptr,uint8_t* character_count)
-
+uint8_t* dataprocesser(CB_t* source_ptr,uint32_t* count)
 {
 uint8_t * removed_data=(uint8_t*)malloc(sizeof(uint8_t));
 uint8_t index=0;
@@ -39,23 +34,23 @@ uint8_t index=0;
 			
 			if(alphabet_condition1 | alphabet_condition2)
 			{
-				character_count[0]++;
+				count[0]++;
 				
 			}
 	
 			if(number_condition1)
 			{	
-				character_count[1]++;
+				count[1]++;
 			}
 
 			if(punctuation_condition1 || punctuation_condition2 || punctuation_condition3 || punctuation_condition4 || punctuation_condition5 || punctuation_condition6)
 			{	
-				character_count[2]++;
+				count[2]++;
 			}
 		
 			if(misc_condition1)
 			{	
-				character_count[3]++;
+				count[3]++;
 			}
 
 			
@@ -64,9 +59,35 @@ uint8_t index=0;
 	}
 
 
-return character_count;
+return count;
 }
 
+
+CB_t * rx_cb; // Receive Circular Buffer
+
+uint8_t test_data[17]="UART0 Initialized";
+uint8_t num_alphabets[19]="No of Alphabets is:";
+uint8_t num_integers[18]="No of Integers is:";
+uint8_t num_punctuations[22]="No of Punctuations is:";
+uint8_t num_specialchars[28]="No of Special Characters is:";
+
+uint32_t char_count[4]={0,0,0,0},toTx;
+uint8_t newline[1]="\n";
+uint8_t tab[1]="\t";
+int cur_position;
+uint8_t  a[4];
+
+
+
+void back_home(int n)
+{
+	int l;
+	uint8_t bkspc_char=0x08;
+	for(l=0;l<n;l++)
+	{
+		UART_send(&bkspc_char);
+	}
+}
 
 
 
@@ -83,6 +104,46 @@ display in host machine
 
 */
 
+    UART_configure(); // Initialize UART0
 
+    // interrupt and NVIC functions from core_cm0plus.h
+    NVIC_ClearPendingIRQ(UART0_IRQn); // Clear pending UART interrupts from NVIC ICPR register
+    NVIC_EnableIRQ(UART0_IRQn); // Enable UART0 interrupt in NVIC ISER
+    NVIC_SetPriority(UART0_IRQn,2); //Set priority of 2 for UART0 interrupt
+    __enable_irq(); // Enable global interrupts
+
+    rx_cb=malloc(sizeof(CB_t));
+    CB_init(rx_cb,100);
+
+    UART_send_n(test_data,17);
+    UART_send(newline);
+    back_home(17);
+    for (;;) {
+
+
+    	if(rx_cb->count == 100)
+    	{
+    		UART_send(newline);
+
+    		dataprocesser(rx_cb,char_count);
+    			for(int k=0;k<4;k++)
+    			{
+    				toTx=my_itoa(*(char_count+k),a,10);
+
+    				if(k==0) cur_position=UART_send_n(num_alphabets,19);
+    				if(k==1) cur_position=UART_send_n(num_integers,18);
+    				if(k==2) cur_position=UART_send_n(num_punctuations,22);
+    				if(k==3) cur_position=UART_send_n(num_specialchars,28);
+
+    				cur_position+=UART_send_n(a,toTx);
+    				back_home(cur_position);
+    				UART_send(newline);
+
+    			}
+
+
+    	}
+
+    }
 
 }
