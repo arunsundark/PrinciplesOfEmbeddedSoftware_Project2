@@ -70,7 +70,7 @@ void UART_send(uint8_t * data)
 @return  None
 
 */
-int UART_send_n(uint8_t * src, size_t length)
+void UART_send_n(uint8_t * src, size_t length)
 {
 	int j=0;
 	if(src!=NULL && length >0)
@@ -81,7 +81,7 @@ int UART_send_n(uint8_t * src, size_t length)
 			UART_send((src+j)); // Send one character at a time from the block of data
 			// The UART_Send function will take care of not writing when the buffer is not empty.
 		}
-		return j;
+
 	}
 	else return 0;
 }

@@ -134,7 +134,7 @@ BBBPATH=/home/code/
 unittests:$(TESTOBJECTS) 
 	mkdir $(TESTOBJPATH) -p
 	$(CC) $(TESTOBJECTS) -I$(INCLUDES) $(CFLAGS) -o $(TESTTARGET) $(PS) $(TESTINCLUDE)
-	./$(TESTTARGET)
+#	./$(TESTTARGET)
 
 #script to build the executable from all source files	
 build:$(OBJECTS)
