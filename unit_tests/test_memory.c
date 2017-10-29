@@ -57,7 +57,7 @@ static void my_memmove_test_no_overlap(void** state)
 		for(index=0;index<10;index++)
 		{
 		
-		assert_int_equal(*(memmove_src+index),(*memmove_dst+index));
+		assert_int_equal(*(memmove_src+index),*(memmove_dst+index));
 		
 		}
 		free(memmove_src);
@@ -90,7 +90,7 @@ static void my_memmove_test_no_overlap(void** state)
 		for(index=0;index<10;index++)
 		{
 		
-		assert_int_equal(*(memmove_src+index),(*memmove_dst+index));
+		assert_int_equal(*(memmove_src+index),*(memmove_dst+index));
 		
 		}
 		//free(memmove_src);
@@ -124,7 +124,7 @@ static void my_memmove_test_no_overlap(void** state)
 		for(index=0;index<10;index++)
 		{
 		
-		assert_int_equal(*(memmove_src+index),(*memmove_dst+index));
+		assert_int_equal(*(memmove_src+index),*(memmove_dst+index));
 		
 		}
 		free(memmove_src);
