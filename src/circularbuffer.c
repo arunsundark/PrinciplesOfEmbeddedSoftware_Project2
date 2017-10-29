@@ -245,7 +245,6 @@ CB_status CB_is_full(CB_t* source_ptr)
 
 		if(source_ptr->count==source_ptr->length)
 		{
-			printf("buffer is full");
 			return buffer_full;
 		}
 		else return null_error;
@@ -280,9 +279,7 @@ CB_status CB_is_empty(CB_t* source_ptr)
 		/* check buffer full condition */			
 
 		if(source_ptr->count==0)
-		{
-			printf("buffer is empty");
-
+		{	
 			return buffer_empty;
 		}
 		else return null_error;
