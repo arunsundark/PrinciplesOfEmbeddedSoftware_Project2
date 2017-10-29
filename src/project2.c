@@ -39,12 +39,13 @@
 
 
 
-uint8_t* dataprocesser(CB_t* source_ptr,uint8_t* count)
+uint8_t* dataprocesser(CB_t* source_ptr,uint32_t* count)
 {
 uint8_t * removed_data=(uint8_t*)malloc(sizeof(uint8_t));
 uint8_t index=0;
 	while(source_ptr->count >0)
-	{		CB_status st=CB_buffer_remove_item(source_ptr,removed_data);
+	{
+			CB_buffer_remove_item(source_ptr,removed_data);
 			
 			if(alphabet_condition1 | alphabet_condition2)
 			{

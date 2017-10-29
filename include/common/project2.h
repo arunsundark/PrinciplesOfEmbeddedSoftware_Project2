@@ -21,7 +21,7 @@
 
 */
 
-uint8_t* dataprocesser(CB_t* source_ptr,uint8_t* count);
+uint8_t* dataprocesser(CB_t* source_ptr,uint32_t* count);
 
 
 

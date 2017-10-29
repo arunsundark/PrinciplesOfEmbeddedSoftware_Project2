@@ -19,6 +19,11 @@ uint8_t my_itoa(int32_t data,uint8_t * ptr, uint32_t base)
 			data=data*-1;
 			flag=1;
 		}	
+
+		if(data==0){
+			*(ptr+j)= *(raw+0);
+			j++;
+		}
 	
 		// getting individual digits of the number and map it with the raw array to get the ascii equivalent
 		while (data){  

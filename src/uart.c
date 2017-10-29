@@ -35,7 +35,9 @@ void UART_configure(void)
 
     SIM_SOPT2 &= ~SIM_SOPT2_PLLFLLSEL_MASK; // clear PLLFLLSEL to select the FLL for this clock source
 
-    UART0_BDL=(0x20 & UART_BDL_SBR_MASK);// set BDL to 32 for 38400 baud : TODO change to macro
+    UART0_C4=(0x14 &UART0_C4_OSR_MASK); // set OSR to 20
+
+    UART0_BDL=(0x1A & UART_BDL_SBR_MASK);// set BDL to 32 for 38400 baud : TODO change to macro
 	
     UART0_C2 |= UART_C2_RIE_MASK;// Enable UART0 receive interrupt
 
@@ -134,17 +136,18 @@ Clears associated flags once the interrupt is serviced.
 */
 void UART0_IRQHandler()
 {
-	uint8_t b,c,d;
-	int e;
+	uint8_t b;
 
-	if (UART0_S1&UART_S1_RDRF_MASK) // If data is received send it back after incrementing by 1
+	if (UART0_S1&UART_S1_RDRF_MASK) // When data is received, add it into the circular buffer
 	  {
 		b=(UART0_D);
-		e=CB_buffer_add_item(rx_cb,b);
-		d=my_itoa(e,&c,10);
-		UART_send_n(&c,d);
-
-
-		// Clear Interrupt
+		CB_buffer_add_item(rx_cb,b);
+		UART_send(&b);
+		// TODO:Clear Interrupt
 	  }
+	if (UART0_S1&UART_S1_RDRF_MASK)
+	{
+
+	}
+
 }
