@@ -31,11 +31,15 @@ Test1
 */	
 
 
-void my_circularbuffer_test_allocatefree_1(void** state)
+static void my_circularbuffer_test_allocatefree_1(void** state)
 {
 CB_t* source_ptr=malloc(sizeof(CB_t));
 uint8_t length=10;
+/* testing if the init function is properly allocating memory or not*/
+/* function returns 2 if the operation is successful */
 assert_int_equal(CB_init(source_ptr,length),2);
+/* testing if the destroy function is properly deallocating memory or not*/
+/* function returns 2 if the operation is successful */
 assert_int_equal(CB_destroy(source_ptr),2);
 
 }
@@ -51,14 +55,15 @@ Test2
 
 
 
-void my_circularbuffer_test_null(void** state)
+static void my_circularbuffer_test_null(void** state)
 {
 		uint8_t length=10;
 		
 		CB_t * source_ptr=NULL; 
 		
 		
-		// Testing 
+		/* Testing if the init function prompts error 
+		   if a NULL pointer is sent */	
 		assert_int_equal(CB_init(source_ptr,length),3);
 }
 
@@ -71,7 +76,7 @@ Test3
 		to test if they are initialised to zero using assert_int_equal
 */	
 
-void my_circularbuffer_test_initialized(void** state)
+static void my_circularbuffer_test_initialized(void** state)
 {
 		uint8_t length=10;
 		uint8_t position=1;
@@ -80,8 +85,9 @@ void my_circularbuffer_test_initialized(void** state)
 		CB_init(source_ptr,length);
 		
 		
-		// Testing
+		// Testing if the buffer is initialized with zero
 	uint8_t i; 
+		/* peeking in all the indices of the buffer and checking their value */
 		for(i=0;i<length;i++)
 		{CB_peek(source_ptr,position,peeked_ptr+i);
 		assert_int_equal(*(peeked_ptr+i),0);
@@ -102,7 +108,7 @@ Test4
 
 
 
-void my_circularbuffer_test_addremove(void** state)
+static void my_circularbuffer_test_addremove(void** state)
 {
 
 		uint8_t length=10;
@@ -111,8 +117,11 @@ void my_circularbuffer_test_addremove(void** state)
  		uint8_t* removed_ptr=malloc(sizeof(uint8_t));
 		CB_t* source_ptr=malloc(sizeof(CB_t)); 
 		CB_init(source_ptr,length);
+		/* adding an element to buffer*/
 		CB_buffer_add_item(source_ptr,value);
+		/* removing the element added */
 		CB_buffer_remove_item(source_ptr,removed_ptr);
+		/* testing if both are equal */		
 		assert_int_equal(*(removed_ptr),value);
 		
 }
@@ -126,7 +135,7 @@ Test5
 		 CB_full to check if it returns buffer_full using assert_int_equal
 */
 
-void my_circularbuffer_test_full(void** state)
+static void my_circularbuffer_test_full(void** state)
 {
 		uint8_t length=3;
 		uint8_t value=7;
@@ -136,7 +145,8 @@ void my_circularbuffer_test_full(void** state)
 	        CB_buffer_add_item(source_ptr,value);
 		CB_buffer_add_item(source_ptr,value);
 		
-		// Testing 
+		/* sending a fully filled buffer to test 
+	           the buffer_full function */
 		assert_int_equal(CB_is_full(source_ptr),1);
 }
 
@@ -154,14 +164,14 @@ Test6
 
 
 
-void my_circularbuffer_test_empty(void** state)
+static void my_circularbuffer_test_empty(void** state)
 {
 		uint8_t length=3;
 		
 		CB_t * source_ptr=malloc(sizeof(CB_t));  
 		CB_init(source_ptr,length);
 		
-		// Testing 
+		/* sending a empty buffer to test buffer_empty function */ 
 		assert_int_equal(CB_is_empty(source_ptr),0);
 }
 
@@ -176,23 +186,29 @@ Test7
 */
 
  
-void my_circularbuffer_test_wrapadd(void** state)
+static void my_circularbuffer_test_wrapadd(void** state)
 {		uint8_t* removed_ptr=malloc(sizeof(uint8_t));
 		uint8_t length=3;
-		//uint8_t* peeked_ptr=malloc(sizeof(uint8_t));
+		
 		uint8_t value=7;
-		//uint8_t position=0;
+		
 		CB_t * source_ptr=malloc(sizeof(CB_t));  
 		CB_init(source_ptr,length);
+		/* trying to add to full buffer capacity */
 		CB_buffer_add_item(source_ptr,value);
 	        CB_buffer_add_item(source_ptr,value);
 		CB_buffer_add_item(source_ptr,value);
+		/*removing oldest item*/
+
 		CB_buffer_remove_item(source_ptr,removed_ptr);
 		
+		/* if *source_ptr is equal to 8, the previously loaded value, 
+		   it shows the add function wraps around at corner */
+
 		CB_buffer_add_item(source_ptr,8);
 		
 		
-		//CB_peek(source_ptr,position,peeked_ptr);
+		
 		assert_ptr_equal(*source_ptr->data,8);	
 }
 
@@ -210,21 +226,28 @@ Test8
 
 
 
-void my_circularbuffer_test_wrapremove(void** state)
+static void my_circularbuffer_test_wrapremove(void** state)
 {		uint8_t* removed_ptr=malloc(sizeof(uint8_t));
 		uint8_t length=3;
 		uint8_t value=7;
 		
 		CB_t * source_ptr=malloc(sizeof(CB_t));  
 		CB_init(source_ptr,length);
+		/* trying to add to full buffer capacity */
 		CB_buffer_add_item(source_ptr,value);
 	        CB_buffer_add_item(source_ptr,value);
 		CB_buffer_add_item(source_ptr,value);
+		/*removing oldest item*/
+
 		CB_buffer_remove_item(source_ptr,removed_ptr);
+		/* adding an element again */
 		CB_buffer_add_item(source_ptr,8);
 		CB_buffer_remove_item(source_ptr,removed_ptr);
 		CB_buffer_remove_item(source_ptr,removed_ptr);
 		CB_buffer_remove_item(source_ptr,removed_ptr);
+		/* removing everything will store the previously added variable*/
+		/* if *removed_ptr is equal to 8, the previously loaded value, 
+		   it shows the remove function wraps around at corner */
 		assert_int_equal(*(removed_ptr),8);
 
 }
@@ -243,7 +266,7 @@ Test9
 
   
 
-void my_circularbuffer_test_overfill(void** state)
+static void my_circularbuffer_test_overfill(void** state)
 {
 	uint8_t length=3;
 	uint8_t value=7;
@@ -252,6 +275,8 @@ void my_circularbuffer_test_overfill(void** state)
 	CB_status s1=CB_buffer_add_item(source_ptr,value);
 	s1=CB_buffer_add_item(source_ptr,value);
 	s1=CB_buffer_add_item(source_ptr,value);
+	/* trying to add to a full empty buffer */
+		/* should throw a buffer_full error */
 	s1=CB_buffer_add_item(source_ptr,8);
 	assert_int_equal(s1,1);
 }
@@ -267,12 +292,14 @@ Test10
 
 
 
-void my_circularbuffer_test_overemove(void** state)
+static void my_circularbuffer_test_overemove(void** state)
 {		uint8_t* removed_ptr=malloc(sizeof(uint8_t));
 		uint8_t length=3;
 		
 		CB_t * source_ptr=malloc(sizeof(CB_t));  
 		CB_init(source_ptr,length);
+		/* trying to remove from an empty buffer */
+		/* should throw a buffer_empty error */
 		CB_status s1=CB_buffer_remove_item(source_ptr,removed_ptr);
 
 		assert_int_equal(s1,0);
