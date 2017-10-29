@@ -45,7 +45,7 @@ void UART_send(uint8_t * data);
 
 */
 
-int UART_send_n(uint8_t * src, size_t length);
+void UART_send_n(uint8_t * src, size_t length);
 /*
 @brief Sends a block of data to the UART
 @param *src byte pointer to start location of memory block to be transmitted

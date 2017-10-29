@@ -38,17 +38,17 @@ uint8_t index=0;
 				
 			}
 	
-			if(number_condition1)
+			else if(number_condition1)
 			{	
 				count[1]++;
 			}
 
-			if(punctuation_condition1 || punctuation_condition2 || punctuation_condition3 || punctuation_condition4 || punctuation_condition5 || punctuation_condition6)
+			else if(punctuation_condition1 || punctuation_condition2 || punctuation_condition3 || punctuation_condition4 || punctuation_condition5 || punctuation_condition6)
 			{	
 				count[2]++;
 			}
 		
-			if(misc_condition1)
+			else
 			{	
 				count[3]++;
 			}
@@ -62,47 +62,43 @@ uint8_t index=0;
 return count;
 }
 
+CB_t * rx_cb,* tx_cb; // Receive and Transmit Circular Buffers
 
-CB_t * rx_cb; // Receive Circular Buffer
+uint8_t test_data[19]="UART0 Initialized\n\r";
+uint8_t num_alphabets[21]="\n\rNo of Alphabets is:";
+uint8_t num_integers[20]="\n\rNo of Integers is:";
+uint8_t num_punctuations[24]="\n\rNo of Punctuations is:";
+uint8_t num_specialchars[30]="\n\rNo of Special Characters is:";
 
-uint8_t test_data[17]="UART0 Initialized";
-uint8_t num_alphabets[19]="No of Alphabets is:";
-uint8_t num_integers[18]="No of Integers is:";
-uint8_t num_punctuations[22]="No of Punctuations is:";
-uint8_t num_specialchars[28]="No of Special Characters is:";
 
-uint32_t char_count[4]={0,0,0,0},toTx;
-uint8_t newline[1]="\n";
-uint8_t tab[1]="\t";
-int cur_position;
+uint8_t nextline[2]="\n\r";
 uint8_t  a[4];
+int display_after_lim=25;
 
-
-
-void back_home(int n)
+void dumpstatistics(CB_t* source_ptr,CB_t* destination_ptr,uint32_t* char_count)
 {
-	int l;
-	uint8_t bkspc_char=0x08;
-	for(l=0;l<n;l++)
-	{
-		UART_send(&bkspc_char);
-	}
+	int toAddLength;
+	uint8_t toAddData[5];
+	dataprocesser(source_ptr,char_count);
+	    			for(int k=0;k<4;k++)
+	    			{
+	    				toAddLength=my_itoa(*(char_count+k),toAddData,10);
+
+	    				if(k==0) UART_send_n(num_alphabets,21);
+	    				if(k==1) UART_send_n(num_integers,20);
+	    				if(k==2) UART_send_n(num_punctuations,24);
+	    				if(k==3) UART_send_n(num_specialchars,30);
+
+	    				UART_send_n(toAddData,toAddLength);
+
+	    			}
+	    			UART_send_n(nextline,2);
 }
 
-
+uint32_t character_count[4]={0,0,0,0};
 
 void project2(void)
 {
-/*
-function call to recieve data from user;
-
-function call to uart to configure and transmit to host ;
-function call to recieve uart data;
-function call to do data processing in uart;
-functonal call to transmit statistics to host mcahine 
-display in host machine
-
-*/
 
     UART_configure(); // Initialize UART0
 
@@ -115,33 +111,19 @@ display in host machine
     rx_cb=malloc(sizeof(CB_t));
     CB_init(rx_cb,100);
 
+    tx_cb=malloc(sizeof(CB_t));
+    CB_init(tx_cb,100);
+
     UART_send_n(test_data,17);
-    UART_send(newline);
-    back_home(17);
+    UART_send_n(nextline,2);
+
     for (;;) {
 
 
-    	if(rx_cb->count == 100)
+    	if(rx_cb->count == display_after_lim)
     	{
-    		UART_send(newline);
-
-    		dataprocesser(rx_cb,char_count);
-    			for(int k=0;k<4;k++)
-    			{
-    				toTx=my_itoa(*(char_count+k),a,10);
-
-    				if(k==0) cur_position=UART_send_n(num_alphabets,19);
-    				if(k==1) cur_position=UART_send_n(num_integers,18);
-    				if(k==2) cur_position=UART_send_n(num_punctuations,22);
-    				if(k==3) cur_position=UART_send_n(num_specialchars,28);
-
-    				cur_position+=UART_send_n(a,toTx);
-    				back_home(cur_position);
-    				UART_send(newline);
-
-    			}
-
-
+    		dumpstatistics(rx_cb,character_count);
+    		// trigger transmit interrupt
     	}
 
     }
