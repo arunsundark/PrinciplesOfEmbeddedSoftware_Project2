@@ -8,13 +8,6 @@
 */
 
 
-
-
-
-
-
-
-
 #include "project2.h"
 #include "uart.h"
 #include "circularbuffer.h"
@@ -35,11 +28,8 @@
 
 ***/
 
+uint8_t* dataprocesser(CB_t* source_ptr,uint8_t* character_count)
 
-
-
-
-uint8_t* dataprocesser(CB_t* source_ptr,uint32_t* count)
 {
 uint8_t * removed_data=(uint8_t*)malloc(sizeof(uint8_t));
 uint8_t index=0;
@@ -49,23 +39,23 @@ uint8_t index=0;
 			
 			if(alphabet_condition1 | alphabet_condition2)
 			{
-				count[0]++;
+				character_count[0]++;
 				
 			}
 	
 			if(number_condition1)
 			{	
-				count[1]++;
+				character_count[1]++;
 			}
 
 			if(punctuation_condition1 || punctuation_condition2 || punctuation_condition3 || punctuation_condition4 || punctuation_condition5 || punctuation_condition6)
 			{	
-				count[2]++;
+				character_count[2]++;
 			}
 		
 			if(misc_condition1)
 			{	
-				count[3]++;
+				character_count[3]++;
 			}
 
 			
@@ -74,7 +64,7 @@ uint8_t index=0;
 	}
 
 
-return count;
+return character_count;
 }
 
 
