@@ -105,7 +105,7 @@ KL25ZCFLAG=-march=armv6-m\
 	-mthumb -mcpu=cortex-m0plus\
 	-mfpu=fpv4-sp-d16\
 	-g3\
-	--specs=nano.specs\
+	--specs=nosys.specs\
 	-fmessage-length=0\
 	-fsigned-char\
 	-ffunction-sections\
