@@ -148,7 +148,6 @@ build:$(OBJECTS)
 
 flash:uart.elf
 		gdb
-		sleep 1
 		target remote localhost:7224
 		load uart.elf
 	
