@@ -58,7 +58,7 @@ TOREMOVE=$(OFILEPATH)/*.o\
 CUR_TARGET=project2
 TARGET=$(CUR_TARGET).elf
 UPL_TARGET=project1_demo.elf
-TESTTARGET=../unit_tests/unittests.out
+#TESTTARGET=../unit_tests/unittests.out
 DISPOUT=./$(TARGET)
 
 #folder paths to create .o files in seperate folder 
@@ -81,7 +81,7 @@ OBJECTS=$(addprefix $(OFILEPATH)/,$(MAINSOURCE:%.c=%.o)) $(COMMONOBJECTS)
 
 #objects for test
 TESTOBJECTS:=$(addprefix $(TESTOBJPATH)/,$(TESTSOURCES:%.c=%.o)) $(COMMONOBJECTS)
-
+TESTTARGETS=$(TESTSOURCES:%.c=%.out)
 #list of dependencies
 DEPS:=$(addprefix $(OFILEPATH),$(OBJECTS:.o=.d))
 
@@ -131,10 +131,10 @@ BBBPATH=/home/code/
 #************* build rules ********************
 
 #script to run unit tests
-unittests:$(TESTOBJECTS) 
+unittests:$(TESTTARGETS) 
 	mkdir $(TESTOBJPATH) -p
 	$(CC) $(TESTOBJECTS) -I$(INCLUDES) $(CFLAGS) -o $(TESTTARGET) $(PS) $(TESTINCLUDE)
-#	./$(TESTTARGET)
+	./$(TESTTARGET)
 
 #script to build the executable from all source files	
 build:$(OBJECTS)

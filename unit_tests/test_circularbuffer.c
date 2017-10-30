@@ -315,7 +315,6 @@ int main (void)
 		cmocka_unit_test(my_circularbuffer_test_initialized),
 		cmocka_unit_test(my_circularbuffer_test_addremove),
 		cmocka_unit_test(my_circularbuffer_test_full),
-		cmocka_unit_test(my_circularbuffer_test_full),
 		cmocka_unit_test(my_circularbuffer_test_empty),
 		cmocka_unit_test(my_circularbuffer_test_wrapadd),
 		cmocka_unit_test(my_circularbuffer_test_wrapremove),
