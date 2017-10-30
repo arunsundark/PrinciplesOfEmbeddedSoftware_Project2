@@ -148,7 +148,10 @@ CB_status CB_buffer_remove_item(CB_t* source_ptr,uint8_t* value)
 	}
 
 	else
-	{
+	{	if(source_ptr->count==0)
+		{
+			return buffer_empty;
+		}
 		/* gets the value that is removed */
 		*value=*(source_ptr->tail);
 		
