@@ -108,6 +108,25 @@ CB_status CB_buffer_add_item(CB_t* source_ptr,uint8_t value)
 }
 
 
+/***
+@brief Add a block of data to the circular buffer
+@param CB_t* source_buffer the input buffer to which the data is to be added
+@param data pointer to base location of block of data to be added to the buffer
+@param length length of data to be added to the buffer
+@return  CB_status status of the operation
+
+*/
+CB_status CB_buffer_add_n(CB_t* source_ptr,uint8_t * data,uint32_t length)
+{
+	int l;
+	CB_status last_status;
+	for(l=0;l<length;l++)
+	{
+		last_status=CB_buffer_add_item(source_ptr,*(data+l));
+	}
+ return last_status;
+}
+
 
 /**
 @brief  Removes data to the circular buffer 
@@ -129,10 +148,7 @@ CB_status CB_buffer_remove_item(CB_t* source_ptr,uint8_t* value)
 	}
 
 	else
-	{	if(source_ptr->count==0)
-		{
-			return buffer_empty;
-		}
+	{
 		/* gets the value that is removed */
 		*value=*(source_ptr->tail);
 		

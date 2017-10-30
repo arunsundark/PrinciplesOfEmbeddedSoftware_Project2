@@ -10,19 +10,8 @@
 #include "project2.h"
 
 
-/***
-#define alphabet_condition1 (((*removed_data)>=65) && ((*removed_data) <=90))
-#define alphabet_condition2 (((*removed_data)>=97) && ((*removed_data) <=122))
-#define number_condition1   (((*removed_data)>=48) && ((*removed_data) <=57))
-#define punctuation_condition1   (((*removed_data)==34) | ((*removed_data)==33))
-#define punctuation_condition2   (((*removed_data)>=39) && ((*removed_data)<=41))
-#define punctuation_condition3   (((*removed_data)>=44) && ((*removed_data) <=46))
-#define punctuation_condition4   (((*removed_data)==58) | ((*removed_data) ==59))
-#define punctuation_condition5   (((*removed_data)==125) |((*removed_data) ==123))
-#define punctuation_condition6   (((*removed_data)==63) | ((*removed_data) ==95))
-#define misc_condition1   (((*removed_data)>=1) && ((*removed_data) <=32))
 
-***/
+CB_t * rx_cb,* tx_cb; // Receive and Transmit Circular Buffers
 
 uint32_t* dataprocesser(CB_t* source_ptr,uint32_t* count)
 {
@@ -32,23 +21,24 @@ uint8_t index=0;
 	{
 			CB_buffer_remove_item(source_ptr,removed_data);
 			
-			if(alphabet_condition1 | alphabet_condition2)
+			if(alphabet_condition1 | alphabet_condition2) // Check for alphabet character condition and increment count of alphabets
 			{
 				count[0]++;
 				
 			}
 	
-			else if(number_condition1)
+			else if(number_condition1) // Check for number characters and increment number count
 			{	
 				count[1]++;
 			}
 
 			else if(punctuation_condition1 || punctuation_condition2 || punctuation_condition3 || punctuation_condition4 || punctuation_condition5 || punctuation_condition6)
+			// check for punctuation characters and increment count
 			{	
 				count[2]++;
 			}
 		
-			else
+			else // if none of the above then increment miscellaneous characters
 			{	
 				count[3]++;
 			}
@@ -62,44 +52,37 @@ uint8_t index=0;
 return count;
 }
 
-CB_t * rx_cb,* tx_cb; // Receive and Transmit Circular Buffers
 
-uint8_t test_data[19]="UART0 Initialized\n\r";
-uint8_t num_alphabets[21]="\n\rNo of Alphabets is:";
-uint8_t num_integers[20]="\n\rNo of Integers is:";
-uint8_t num_punctuations[24]="\n\rNo of Punctuations is:";
-uint8_t num_specialchars[30]="\n\rNo of Special Characters is:";
-
-
-uint8_t nextline[2]="\n\r";
-uint8_t  a[4];
-int display_after_lim=25;
 
 void dumpstatistics(CB_t* source_ptr,CB_t* destination_ptr,uint32_t* char_count)
 {
 	int toAddLength;
-	uint8_t toAddData[5];
-	dataprocesser(source_ptr,char_count);
-	    			for(int k=0;k<4;k++)
+	uint8_t toAddData[8];
+	dataprocesser(source_ptr,char_count); // run data processor on recive buffer to get the number of characters
+		
+		// add the calculated count to transmit buffer along with required display strings
+		for(int k=0;k<4;k++)
 	    			{
-	    				toAddLength=my_itoa(*(char_count+k),toAddData,10);
+	    				toAddLength=my_itoa(*(char_count+k),toAddData,10); // Convert the integer count to characters
+						
+						// Display the type of character for which count is being printed
+	    				if(k==0) CB_buffer_add_n(destination_ptr,num_alphabets,21);  
+	    				if(k==1) CB_buffer_add_n(destination_ptr,num_integers,20);
+	    				if(k==2) CB_buffer_add_n(destination_ptr,num_punctuations,24);
+	    				if(k==3) CB_buffer_add_n(destination_ptr,num_specialchars,27);
 
-	    				if(k==0) UART_send_n(num_alphabets,21);
-	    				if(k==1) UART_send_n(num_integers,20);
-	    				if(k==2) UART_send_n(num_punctuations,24);
-	    				if(k==3) UART_send_n(num_specialchars,30);
-
-	    				UART_send_n(toAddData,toAddLength);
+	    				CB_buffer_add_n(destination_ptr,toAddData,toAddLength);
 
 	    			}
-	    			UART_send_n(nextline,2);
+	    			CB_buffer_add_n(destination_ptr,nextline,2); // go to newline after display
 }
 
-uint32_t character_count[4]={0,0,0,0};
+
 
 void project2(void)
 {
-
+	uint32_t character_count[4]={0,0,0,0};
+	
     UART_configure(); // Initialize UART0
 
     // interrupt and NVIC functions from core_cm0plus.h
@@ -108,22 +91,25 @@ void project2(void)
     NVIC_SetPriority(UART0_IRQn,2); //Set priority of 2 for UART0 interrupt
     __enable_irq(); // Enable global interrupts
 
+	// Initialize Receive Buffer
     rx_cb=malloc(sizeof(CB_t));
     CB_init(rx_cb,100);
-
+	
+	// Initialize Transmit buffer
     tx_cb=malloc(sizeof(CB_t));
-    CB_init(tx_cb,100);
-
+    CB_init(tx_cb,200);
+	
+	// Send test charcater terminal
     UART_send_n(test_data,17);
     UART_send_n(nextline,2);
 
-    for (;;) {
-
-
-    	if(rx_cb->count == display_after_lim)
+    for (;;) 
+	{
+    	UART_TX_Int_Disable();
+    	if(rx_cb->count == display_after_lim) // wait till the preset number of characters
     	{
-    		dumpstatistics(rx_cb,character_count);
-    		// trigger transmit interrupt
+    		dumpstatistics(rx_cb,tx_cb,character_count); // dump statistics into the transmit buffer 
+    		UART_TX_Int_Enable();// enable transmit interrupt to send data from ISR
     	}
 
     }

@@ -7,16 +7,15 @@
 */
 
 #include "uart.h"
-#include "conversion.h"
 
 // Uses UART0 on the FRDM Board
 
 
 /**
-@brief Configures the UART to given settings 
-@param 
-@param TBD
-@return  TBD
+@brief Configures the UART0 to 38400 or 115200 baud when board
+is working at 21Mhz. The baud rate can be set using macro in uart.h
+@param none
+@return  none
 */
 void UART_configure(void)
 {
@@ -44,6 +43,25 @@ void UART_configure(void)
     UART0_C2 |= (UART0_C2_TE_MASK| UART0_C2_RE_MASK );// Enable receiver and transmitter
 }
 
+/**
+@brief Disables transmit interrupt on the UART 
+@param none
+@return  none
+*/
+void UART_TX_Int_Enable(void)
+{
+	UART0_C2 |= UART_C2_TIE_MASK;// Enable UART0 transmit interrupt
+}
+
+/**
+@brief Enables transmit interrupt on the UART 
+@param none
+@return  none
+*/
+void UART_TX_Int_Disable(void)
+{
+	UART0_C2 &= ~UART_C2_TIE_MASK;// Disable UART0 transmit interrupt
+}
 
 /**
 @brief Sends a single byte of data to UART
@@ -83,13 +101,12 @@ void UART_send_n(uint8_t * src, size_t length)
 		}
 
 	}
-	else return 0;
 }
 
 /**
 @brief Receives a byte of data from the UART 
 @param *dst byte pointer to location where received data is stored
-@return  None
+@return  byte pointer to location where received data is stored
 
 */
 uint8_t * UART_receive(uint8_t * dst)
@@ -110,7 +127,7 @@ uint8_t * UART_receive(uint8_t * dst)
 @brief Receives a block of data from the UART
 @param *dst byte pointer to start location of memory block where received data is stored
 @param length of memory block received
-@return * byte pointer to received data
+@return * byte pointer to start of received block of data
 
 */
 uint8_t * UART_receive_n(uint8_t * dst, size_t length)
@@ -130,7 +147,7 @@ uint8_t * UART_receive_n(uint8_t * dst, size_t length)
 
 /**
 @brief Interrupt handler for UART send and receive. Handles send and receive interrupts.
-Clears associated flags once the interrupt is serviced.
+associated flags are cleared in hardware once the interrupt is serviced.
 
 @return none
 
@@ -143,11 +160,16 @@ void UART0_IRQHandler()
 	  {
 		b=(UART0_D); //read UART0 data register
 		CB_buffer_add_item(rx_cb,b); // Add read data to receive circular buffer
-		UART_send(&b); // Printing back to show typed character on terminal
 		// Interrupt is cleared when data read from the register
 	  }
-	if (UART0_S1&UART_S1_RDRF_MASK)
+	
+	if ((UART0_S1&UART_S1_TDRE_MASK)||(UART0_S1&UART_S1_TC_MASK))
 	{
+		while(CB_is_empty(tx_cb)!=0) // keep removing and transmitting till the buffer is empty
+		{
+			CB_buffer_remove_item(tx_cb,&b); // remove from buffer
+			UART_send(&b); // transmit data removed from buffer.
+		}
 
 	}
 
