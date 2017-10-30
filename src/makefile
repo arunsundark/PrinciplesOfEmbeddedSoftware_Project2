@@ -44,14 +44,12 @@ PS=
 
 #List of files to be cleaned when running clean
 TOREMOVE=$(OFILEPATH)/*.o\
-	$(TESTOBJPATH)/*.o\
-	$(TESTTARGET)\
+	$(TESTTARGETS)\
 	$(TARGET)\
 	$(OFILEPATH)/*.map\
 	*.asm\
 	*.i\
 	$(OFILEPATH)/*.d\
-	$(TESTOBJPATH)/*.d\
 	$(OFILEPATH)/*.dep\
 
 #declaring targets with folders to put them in
@@ -79,9 +77,10 @@ COMMONOBJECTS:=$(addprefix $(OFILEPATH)/,$(COMMONSOURCES:%.c=%.o))
 #objects for build
 OBJECTS=$(addprefix $(OFILEPATH)/,$(MAINSOURCE:%.c=%.o)) $(COMMONOBJECTS)
 
-#objects for test
-TESTOBJECTS:=$(addprefix $(TESTOBJPATH)/,$(TESTSOURCES:%.c=%.o)) $(COMMONOBJECTS)
-TESTTARGETS=$(TESTSOURCES:%.c=%.out)
+#targets for test
+TESTTARGETS:=$(addprefix $(TESTSRCPATH)/,$(TESTSOURCES:%.c=%.out)) 
+#TESTTARGETS=$(TESTSOURCES:%.c=%.out)
+
 #list of dependencies
 DEPS:=$(addprefix $(OFILEPATH),$(OBJECTS:.o=.d))
 
@@ -130,13 +129,16 @@ BBBPATH=/home/code/
 
 #************* build rules ********************
 
-#script to run unit tests
+#rule to run unit tests
 unittests:$(TESTTARGETS) 
-	mkdir $(TESTOBJPATH) -p
-	$(CC) $(TESTOBJECTS) -I$(INCLUDES) $(CFLAGS) -o $(TESTTARGET) $(PS) $(TESTINCLUDE)
-	./$(TESTTARGET)
+	./../unit_tests/test_conversion.out
+	./../unit_tests/test_circularbuffer.out
+	./../unit_tests/test_memory.out
 
-#script to build the executable from all source files	
+$(TESTSRCPATH)/%.out: $(TESTSRCPATH)/%.c $(COMMONOBJECTS)	
+	$(CC) $< -I$(INCLUDES) $(CFLAGS) -o $@ $(PS) $(TESTINCLUDE)	$(COMMONOBJECTS)
+		
+#rule to build the executable from all source files	
 build:$(OBJECTS)
 	mkdir $(OFILEPATH) -p
 	$(CC) $(OBJECTS) -I$(INCLUDES) $(CFLAGS) $(LDFLAGS) -o $(TARGET) -D$(DS) $(PS) -Xlinker -Map=$(OFILEPATH)/$(CUR_TARGET).map
@@ -152,7 +154,7 @@ upload:$(OBJECTS)
 	$(SIZETOOLBBB) $(OBJECTS) $(TARGET)
 	scp $(TARGET) root@192.168.7.2:$(BBBPATH)$(TARGET)
 
-#script to just compile all	source files and not link
+#rule to just compile all	source files and not link
 compile-all:$(OBJECTS)
 	
 $(OFILEPATH)/%.d : %.c
@@ -170,19 +172,14 @@ $(OFILEPATH)/%.s : %.s
 	cp $< $@
 #	$(CC) -MMD -c $< -o $@ -I$(INCLUDES) $(CFLAGS) -D$(DS) $(LDFLAGS) $(PS)
 
-#script to compile build C files
+#rule to compile build C files
 $(OFILEPATH)/%.o : %.c
 	mkdir $(OFILEPATH) -p
 #	$(CC) -MM $< -MF $(OFILEPATH)/$*.dep -I $(INCLUDES) $(CFLAGS) $(PS)
 	$(CC) -MMD -c $< -o $@ -I$(INCLUDES) $(CFLAGS) -D$(DS) $(PS)
 #	@echo "\n******Built" $@"******"	
 
-#script to compile test C files	
-$(TESTOBJPATH)/%.o	: $(TESTSRCPATH)/%.c
-	mkdir $(TESTOBJPATH) -p
-	$(CC) -MMD -c $< -o $@ -I$(INCLUDES) $(CFLAGS) $(PS) 
-#	@echo "\n******Built" $@"******"
 
-#script to delete objects created by build script
+#rule to delete objects created by build script
 clean:
 	rm -f $(TOREMOVE)

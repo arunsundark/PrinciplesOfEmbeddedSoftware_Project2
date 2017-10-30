@@ -15,4 +15,5 @@ ASSOURCE=startup_MKL25Z4.s
 INCLUDES=../include/common
 
 TESTSOURCES=test_circularbuffer.c\
+	test_conversion.c\
 	test_memory.c

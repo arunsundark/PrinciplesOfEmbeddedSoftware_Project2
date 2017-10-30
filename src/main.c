@@ -24,6 +24,21 @@ int main()
 #ifndef NOPRINTDEFAULT
 	
 	printf("\nNo ProjectN Compile Time Switch, if you need it run \nmake clean \nand run \nmake build PS=-DPROJECTn\n");
+	uint8_t * memmove_src= malloc(sizeof(uint8_t)*10);
+	uint8_t * memmove_dst= memmove_src + 5;
+	int index=0;
+	
+	for(index=0;index<10;index++)
+		{
+			*(memmove_src+index)=index;
+		}
+		printf("\nbefore\n");
+	print_memory(memmove_src,10);
+	print_memory(memmove_dst,10);
+	my_memmove(memmove_src,memmove_dst,10);
+	printf("\nafter\n");
+	print_memory(memmove_src,10);
+	print_memory(memmove_dst,10);
 	
 #endif
 return 0;
