@@ -35,7 +35,8 @@ static void my_memmove_test_null_1(void** state)
 		assert_int_equal(my_memmove(memmove_src,memmove_dst,testLength),0) ;
 		free(memmove_dst);
 }
-/*TEST 2
+/**
+TEST 2
 @brief Checks if the function works in nooverlap condition
 @description checks how the function responds if the input pointers dont overlap
 
@@ -44,27 +45,28 @@ static void my_memmove_test_null_1(void** state)
 static void my_memmove_test_no_overlap(void** state)
 {
 		size_t testLength=10;
-		uint8_t * memmove_src=malloc(sizeof(uint8_t)*testlength),* memmove_dst= malloc(sizeof(uint8_t)*testLength);
+		uint8_t * memmove_src=malloc(sizeof(uint8_t)*testLength),* memmove_dst= malloc(sizeof(uint8_t)*testLength);
 		uint8_t index;
 		/* initialising the source buffer */
-		for(index=0;index<10;index++)
+		for(index=0;index<testLength;index++)
 		{
 		*(memmove_src+index)=index;
 		}
 		my_memmove(memmove_src,memmove_dst,testLength);
 		
-		/* checking if the source and destination pointers are dereferenced to the same value*/
-		for(index=0;index<10;index++)
+		/* checking if the destination pointers are dereferenced to the same value as index which was the data in source*/
+		for(index=0;index<testLength;index++)
 		{
 		
-		assert_int_equal(*(memmove_src+index),*(memmove_dst+index));
+		assert_int_equal(index,*(memmove_dst+index));
 		
 		}
 		free(memmove_src);
 		free(memmove_dst);
 }
 
-/*TEST 3
+/**
+TEST 3
 @brief Checks if the function works in overlap condition
 @description checks how the function responds if the source pointer overlaps 
 	     in the destination pointer region
@@ -73,32 +75,33 @@ static void my_memmove_test_no_overlap(void** state)
 
 
 		
-static void my_memmove_test_no_overlap(void** state)
+static void my_memmove_test_no_overlap_src_in_dst(void** state)
 {
 		size_t testLength=10;
 		uint8_t * memmove_dst= malloc(sizeof(uint8_t)*testLength);
-		uint8_t * memmove_src= memove_dst + 5;
+		uint8_t * memmove_src= memmove_dst + 5;
 		uint8_t index;
 		/* initialising the source buffer */
-		for(index=0;index<10;index++)
+		for(index=0;index<testLength;index++)
 		{
 		*(memmove_src+index)=index;
 		}
 		my_memmove(memmove_src,memmove_dst,testLength);
 		
-		/* checking if the source and destination pointers are dereferenced to the same value*/
-		for(index=0;index<10;index++)
+		/* checking if the destination pointers are dereferenced to the same value as index which was the data in source*/
+		for(index=0;index<testLength;index++)
 		{
 		
-		assert_int_equal(*(memmove_src+index),*(memmove_dst+index));
+		assert_int_equal(index,*(memmove_dst+index));
 		
 		}
-		//free(memmove_src);
+		
 		free(memmove_dst);
 }
 		
 
-/*TEST 3
+/**
+TEST 4
 @brief Checks if the function works in overlap condition
 @description checks how the function responds if the destination pointer overlaps 
 	     in the source pointer region
@@ -107,28 +110,29 @@ static void my_memmove_test_no_overlap(void** state)
 
 
 		
-static void my_memmove_test_no_overlap(void** state)
+static void my_memmove_test_no_overlap_dst_in_src(void** state)
 {
 		size_t testLength=10;
 		uint8_t * memmove_src= malloc(sizeof(uint8_t)*testLength);
-		uint8_t * memmove_dst= memove_src + 5;
+		uint8_t * memmove_dst= memmove_src + 5;
 		uint8_t index;
 		/* initialising the source buffer */
-		for(index=0;index<10;index++)
+		for(index=0;index<testLength;index++)
 		{
-		*(memmove_src+index)=index;
+			*(memmove_src+index)=index;
 		}
 		my_memmove(memmove_src,memmove_dst,testLength);
 		
-		/* checking if the source and destination pointers are dereferenced to the same value*/
-		for(index=0;index<10;index++)
+		/* checking if the destination pointers are dereferenced to the same value as index which was the data in source*/
+		for(index=0;index<testLength;index++)
 		{
 		
-		assert_int_equal(*(memmove_src+index),*(memmove_dst+index));
+		assert_int_equal(index,*(memmove_dst+index));
 		
 		}
+		
 		free(memmove_src);
-		//free(memmove_dst);
+		
 }
 
 
@@ -294,6 +298,9 @@ int main (void)
 	const struct CMUnitTest tests[] =
 	{
 		cmocka_unit_test(my_memmove_test_null_1),
+		cmocka_unit_test(my_memmove_test_no_overlap),
+		cmocka_unit_test(my_memmove_test_no_overlap_src_in_dst),
+		cmocka_unit_test(my_memmove_test_no_overlap_dst_in_src),
 		cmocka_unit_test(my_memset_test_null),
 		cmocka_unit_test(my_memset_test),
 		cmocka_unit_test(my_memzero_test_null),
