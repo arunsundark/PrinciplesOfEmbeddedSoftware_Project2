@@ -1,10 +1,10 @@
-Aakash Kumar/ArunSundar
+## Aakash Kumar/ArunSundar
 
-###Project 2 of ECEN-5813 Principles of embedded software 
+### Project 2 of ECEN-5813 Principles of embedded software 
 This project results in the creation of a data processing application for KL25z and enables serial communication to it using UART peripheral. 
 The repository also contains unit test code developed using Cmocka unit test framework.
 
-##Make file usage
+## Make file usage
 * Using the "make unittests" command will enable the test of unit tests for the functions from Project1 and Project2
 * Using the "make PS=-DPROJECT2" command will enable the compile time switch for project2
 * Using the "make PLATFORM=KL25Z"  will create the target executable to run on KL25Z
@@ -12,9 +12,7 @@ The repository also contains unit test code developed using Cmocka unit test fra
 
 
 
-
-
-##Run instructions
+## Run instructions
 * The data to be analyzed is transmitted through putty, via serial port, to KL25Z
 * The KL25Z wais to recieve data and upon reception goes to the ISR
 * The ISR handles the data reception in and stores the data in the circular buffer
@@ -25,15 +23,19 @@ The repository also contains unit test code developed using Cmocka unit test fra
 
 
 
-##Files in the directory
+## Files in the directory
 * include: contains the header files required for all the platform
 * platfrom: contains the architecture specific required to compile certain targets
 * src: contains the c-source files for the project
 * unit_tests: contains the unit tests written to test all the c functions
 
-##Project Work --  Aakash Kumar/ArunSundar 
+## Project Work --  Aakash Kumar/ArunSundar 
 
-##References
+## References
 
 https://www.bysatish.in/3/
+
+http://www.samlewis.me/2016/09/embedded-unit-testing-with-cmocka/
+
+
 
