@@ -5,10 +5,10 @@ This project results in the creation of a data processing application for KL25z 
 The repository also contains unit test code developed using Cmocka unit test framework.
 
 ##Make file usage
-Using the "make unittests" command will enable the test of unit tests for the functions from Project1 and Project2
-Using the "make PS=-DPROJECT2" command will enable the compile time switch for project2
-Using the "make PLATFORM=KL25Z"  will create the target executable to run on KL25Z
-Using the "make build" command will create the target executable to run on HOSTMACHINE
+* Using the "make unittests" command will enable the test of unit tests for the functions from Project1 and Project2
+* Using the "make PS=-DPROJECT2" command will enable the compile time switch for project2
+* Using the "make PLATFORM=KL25Z"  will create the target executable to run on KL25Z
+* Using the "make build" command will create the target executable to run on HOSTMACHINE
 
 
 
