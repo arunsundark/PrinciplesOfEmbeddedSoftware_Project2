@@ -9,7 +9,14 @@ The repository also contains unit test code developed using Cmocka unit test fra
 * Using the "make PS=-DPROJECT2" command will enable the compile time switch for project2
 * Using the "make PLATFORM=KL25Z"  will create the target executable to run on KL25Z
 * Using the "make build" command will create the target executable to run on HOSTMACHINE
+* Running "make flash" can transfer the generated files from host machine to the freedom board
 
+## Extra credit
+* The following commands can be run from the command line to transfer files from HOST to FRDM board
+* gdb
+* target remote localhost:7224
+* load project2.elf
+* Additionally monitor _reset can be run to reset the freedom board from the command line
 
 
 ## Run instructions

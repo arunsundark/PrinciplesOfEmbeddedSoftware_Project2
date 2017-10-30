@@ -35,7 +35,7 @@ PLATFORM=HOST
 SIZETOOL=size
 SIZETOOLBBB=arm-linux-gnueabihf-size
 	
-.PHONY:build clean compile-all upload unittests
+.PHONY:build clean compile-all upload unittests flash
 
 #compile time switches for verbose output
 #and adding in 
@@ -146,6 +146,12 @@ build:$(OBJECTS)
 	$(SIZETOOL) $(OBJECTS) $(TARGET)
 	$(DISPOUT)
 
+flash:uart.elf
+		gdb
+		sleep 1
+		target remote localhost:7224
+		load uart.elf
+	
 #building the executable for beaglebone black 
 #and transfer it directly to the board using scp
 upload:$(OBJECTS)
