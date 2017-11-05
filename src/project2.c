@@ -78,13 +78,12 @@ void dumpstatistics(CB_t* source_ptr,CB_t* destination_ptr,uint32_t* char_count)
 }
 
 
-
 void project2(void)
 {
 	uint32_t character_count[4]={0,0,0,0};
 	
     UART_configure(); // Initialize UART0
-
+    RGB_LED_Init(); // Initialize the LED
     // interrupt and NVIC functions from core_cm0plus.h
     NVIC_ClearPendingIRQ(UART0_IRQn); // Clear pending UART interrupts from NVIC ICPR register
     NVIC_EnableIRQ(UART0_IRQn); // Enable UART0 interrupt in NVIC ISER
@@ -105,12 +104,49 @@ void project2(void)
 
     for (;;) 
 	{
-    	UART_TX_Int_Disable();
+    	 UART_TX_Int_Disable();
     	if(rx_cb->count == display_after_lim) // wait till the preset number of characters
     	{
     		dumpstatistics(rx_cb,tx_cb,character_count); // dump statistics into the transmit buffer 
     		UART_TX_Int_Enable();// enable transmit interrupt to send data from ISR
     	}
+
+    }
+
+}
+
+
+void project2_demo(void)
+{
+
+    UART_configure(); // Initialize UART0
+    RGB_LED_Init(); // Initialize the LED
+
+	// Send test character terminal
+    UART_send_n(test_data,17);
+    UART_send_n(nextline,2);
+
+    for (;;)
+	{
+    	uint8_t b[1];
+
+    	UART_receive(b);
+		if(*b=='r')
+		{
+			REDON; GREENOFF; BLUEOFF;
+		}
+		else if(*b=='g')
+		{
+			REDOFF; BLUEOFF; GREENON;
+		}
+		else if(*b=='b')
+		{
+			REDOFF; GREENOFF; BLUEON;
+		}
+		else
+		{
+			REDOFF; GREENOFF;BLUEOFF;
+		}
 
     }
 

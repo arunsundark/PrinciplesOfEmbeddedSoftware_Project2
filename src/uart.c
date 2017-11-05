@@ -106,7 +106,7 @@ void UART_send_n(uint8_t * src, size_t length)
 /**
 @brief Receives a byte of data from the UART 
 @param *dst byte pointer to location where received data is stored
-@return  byte pointer to location where received data is stored
+@return  None
 
 */
 uint8_t * UART_receive(uint8_t * dst)
@@ -161,6 +161,7 @@ void UART0_IRQHandler()
 		b=(UART0_D); //read UART0 data register
 		CB_buffer_add_item(rx_cb,b); // Add read data to receive circular buffer
 		// Interrupt is cleared when data read from the register
+		UART_send(&b); // echo received character to terminal
 	  }
 	
 	if ((UART0_S1&UART_S1_TDRE_MASK)||(UART0_S1&UART_S1_TC_MASK))

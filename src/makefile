@@ -10,7 +10,7 @@ CSTD=c99
 
 COMMONCFLAGS=-Wall\
 	-std=$(CSTD)\
-#	-Werror\
+	-Werror\
 	-O0
 	
 HOSTCFLAGS=-g	
@@ -110,7 +110,7 @@ KL25ZCFLAG=-march=armv6-m\
 	-ffunction-sections\
 	-fdata-sections\
 	-D"CPU_MKL25Z128VLK4"
-
+	
 CFLAGS=$(COMMONCFLAGS) $(KL25ZCFLAG)
 	
 LDFLAGS=-T ../platform/MKL25Z128xxx4_flash.ld
@@ -131,13 +131,13 @@ BBBPATH=/home/code/
 
 #rule to run unit tests
 unittests:$(TESTTARGETS) 
-	./../unit_tests/test_conversion.out
-	./../unit_tests/test_circularbuffer.out
-	./../unit_tests/test_memory.out
-
+	
+# rule to build seperate out file for each unittest .c file and display
 $(TESTSRCPATH)/%.out: $(TESTSRCPATH)/%.c $(COMMONOBJECTS)	
 	$(CC) $< -I$(INCLUDES) $(CFLAGS) -o $@ $(PS) $(TESTINCLUDE)	$(COMMONOBJECTS)
-		
+	./$(TESTSRCPATH)/$@
+
+	
 #rule to build the executable from all source files	
 build:$(OBJECTS)
 	mkdir $(OFILEPATH) -p

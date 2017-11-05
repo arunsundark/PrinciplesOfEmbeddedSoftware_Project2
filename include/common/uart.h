@@ -12,8 +12,14 @@
 #include<stdlib.h>
 #include"MKL25Z4.h"
 #include "circularbuffer.h"
+#include "led.h"
 
 #define BAUD 38400
+
+#if(BAUD==9600)
+#define	osr_val 0x19
+#define bdl_val 0x54
+#endif
 
 
 #if(BAUD==115200)

@@ -1,7 +1,7 @@
 #include<stdint.h>
 #include<stdlib.h>
 
-#include "circularbuffer.h"
+
 #include "uart.h"
 #include "conversion.h"
 
@@ -24,7 +24,7 @@ uint8_t num_punctuations[24]="\n\rNo of Punctuations is:";
 uint8_t num_specialchars[27]="\n\rNo of Misc Characters is:";
 uint8_t nextline[2]="\n\r";
 
-uint32_t display_after_lim=30; // No of characters after which statistics is displayed
+uint32_t display_after_lim=25; // No of characters after which statistics is displayed
 
 /**
 @brief uint8_t* count counts the number of alphabets,numbers,punctuations, miscellaneous characters recieved 
@@ -43,6 +43,8 @@ uint32_t* dataprocesser(CB_t* source_ptr,uint32_t* count);
 */
 void project2(void);
 
+
+void project2_demo(void);
 
 
 
